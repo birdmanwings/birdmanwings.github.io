@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="什么是端到端加密在加密网络通信中（例如TLS），可以防止攻击者破解加密报文，伪造身份。我们假设一个场景：存在两个客户端A和B，它们通过服务器S进行消息传递，从而实现通信。我们可以观察在这个过程中，客户端A与服务器S做一次消息传递，加密消息发送到服务端时会进行解密，当要发送给客户端B时，再进行一次加密然后传输，这也是常见IM的通信方式。  整个过程中，明文会存储在服务器，当攻击者攻破服务器，或者服务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="两个人的秘密-端到端加密">
+<meta property="og:url" content="http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/index.html">
+<meta property="og:site_name" content="BDWMS">
+<meta property="og:description" content="什么是端到端加密在加密网络通信中（例如TLS），可以防止攻击者破解加密报文，伪造身份。我们假设一个场景：存在两个客户端A和B，它们通过服务器S进行消息传递，从而实现通信。我们可以观察在这个过程中，客户端A与服务器S做一次消息传递，加密消息发送到服务端时会进行解密，当要发送给客户端B时，再进行一次加密然后传输，这也是常见IM的通信方式。  整个过程中，明文会存储在服务器，当攻击者攻破服务器，或者服务">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://image.bdwms.com/FuPdRD-5x6JDJ-twQbnhC0uNuFzn">
+<meta property="og:image" content="https://image.bdwms.com/FsloogA_7i-1j3xjYAGESskUdDRG">
+<meta property="og:image" content="http://image.bdwms.com/Fmt3m8FcP5srMMrRjsqKDpdwSKgZ">
+<meta property="og:image" content="http://image.bdwms.com/FpcwsX8mQoxRoZVp1cPJ5bMnpTFv">
+<meta property="og:image" content="http://image.bdwms.com/Fk0ETNDhliXg1lnoYC9zWBqgb_Jm">
+<meta property="og:image" content="http://image.bdwms.com/FpFG1oXDRRgK4RsEdKjX8tTIzn8G">
+<meta property="og:image" content="http://image.bdwms.com/FkpAO81vOvXytc1IBD3-_ligehZB">
+<meta property="og:image" content="http://image.bdwms.com/FnqmNz5WOFDmV1ainf1IhqDazzng">
+<meta property="og:image" content="http://image.bdwms.com/FiJ3s3vnlHhYcuVbaMUm86m-2r0H">
+<meta property="og:image" content="http://image.bdwms.com/Fj5q6pnm-ekb5E-NyGI09UQ7LO6s">
+<meta property="og:image" content="http://image.bdwms.com/Fk4VYjCBKmc4C-F9Ly_69GIgKOVv">
+<meta property="og:image" content="http://image.bdwms.com/FkFdHpvNC0MepPUWB-qJ0KjUHI41">
+<meta property="og:image" content="http://image.bdwms.com/FqSh4YL63VL3QsoY5yjCWrfJVM9L">
+<meta property="og:image" content="http://image.bdwms.com/FguqVlzdQnO4gZZoi5Mcc09j3X7l">
+<meta property="og:image" content="http://image.bdwms.com/FvTSBrq41uZsyEA6ykg3YSsy5P5A">
+<meta property="article:published_time" content="2021-01-20T14:37:22.000Z">
+<meta property="article:modified_time" content="2021-01-27T15:34:01.792Z">
+<meta property="article:author" content="bdwms">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://image.bdwms.com/FuPdRD-5x6JDJ-twQbnhC0uNuFzn">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>两个人的秘密-端到端加密</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+      
+<link rel="stylesheet" href="/css/rtl.css">
+
+    
+    <!-- rss -->
+    
+    
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/categories/">Category</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" href="/2021/01/16/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8B%EF%BC%89/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/&text=两个人的秘密-端到端加密"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/&title=两个人的秘密-端到端加密"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/&is_video=false&description=两个人的秘密-端到端加密"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=两个人的秘密-端到端加密&body=Check out this article: http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/&title=两个人的秘密-端到端加密"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/&title=两个人的秘密-端到端加密"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/&title=两个人的秘密-端到端加密"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/&title=两个人的秘密-端到端加密"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/&name=两个人的秘密-端到端加密&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/&t=两个人的秘密-端到端加密"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86"><span class="toc-number">1.</span> <span class="toc-text">什么是端到端加密</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%9A%E7%95%8C%E7%8E%B0%E7%8A%B6"><span class="toc-number">2.</span> <span class="toc-text">业界现状</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Signal%E5%8D%8F%E8%AE%AE%E7%AE%80%E4%BB%8B"><span class="toc-number">3.</span> <span class="toc-text">Signal协议简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86"><span class="toc-number">4.</span> <span class="toc-text">预备知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#DH%E7%B1%BB%E7%AE%97%E6%B3%95"><span class="toc-number">4.1.</span> <span class="toc-text">DH类算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E5%90%91%E5%AE%89%E5%85%A8%EF%BC%8C%E5%90%8E%E5%90%91%E5%AE%89%E5%85%A8"><span class="toc-number">4.2.</span> <span class="toc-text">前向安全，后向安全</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Signal%E4%B9%8BX3DH%E5%8D%8F%E8%AE%AE"><span class="toc-number">5.</span> <span class="toc-text">Signal之X3DH协议</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1%E7%9B%AE%E7%9A%84"><span class="toc-number">5.1.</span> <span class="toc-text">设计目的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="toc-number">5.2.</span> <span class="toc-text">相关概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84"><span class="toc-number">5.3.</span> <span class="toc-text">基本架构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E8%A7%A3%E6%9E%90"><span class="toc-number">5.4.</span> <span class="toc-text">问题解析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Signal%E4%B9%8B%E5%8F%8C%E6%A3%98%E8%BD%AE"><span class="toc-number">6.</span> <span class="toc-text">Signal之双棘轮</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1%E7%9B%AE%E7%9A%84-1"><span class="toc-number">6.1.</span> <span class="toc-text">设计目的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#KDF%E9%93%BE"><span class="toc-number">6.2.</span> <span class="toc-text">KDF链</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Symmetric-key%E6%A3%98%E8%BD%AE"><span class="toc-number">6.3.</span> <span class="toc-text">Symmetric-key棘轮</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DH%E6%A3%98%E8%BD%AE"><span class="toc-number">6.4.</span> <span class="toc-text">DH棘轮</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8C%E6%A3%98%E8%BD%AE%E7%9A%84%E7%BB%84%E5%90%88"><span class="toc-number">6.5.</span> <span class="toc-text">双棘轮的组合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%B1%E5%BA%8F%E5%A4%84%E7%90%86"><span class="toc-number">6.6.</span> <span class="toc-text">失序处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#X3DH%E7%BB%93%E5%90%88%E5%8F%8C%E6%A3%98%E8%BD%AE"><span class="toc-number">6.7.</span> <span class="toc-text">X3DH结合双棘轮</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">7.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">8.</span> <span class="toc-text">参考</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        两个人的秘密-端到端加密
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bdwms</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2021-01-20T14:37:22.000Z" itemprop="datePublished">2021-01-20</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/network/">network</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="什么是端到端加密"><a href="#什么是端到端加密" class="headerlink" title="什么是端到端加密"></a>什么是端到端加密</h2><p>在加密网络通信中（例如TLS），可以防止攻击者破解加密报文，伪造身份。我们假设一个场景：存在两个客户端A和B，它们通过服务器S进行消息传递，从而实现通信。我们可以观察在这个过程中，客户端A与服务器S做一次消息传递，加密消息发送到服务端时会进行解密，当要发送给客户端B时，再进行一次加密然后传输，这也是常见IM的通信方式。</p>
+<p><img src="http://image.bdwms.com/FuPdRD-5x6JDJ-twQbnhC0uNuFzn"></p>
+<p>整个过程中，明文会存储在服务器，当攻击者攻破服务器，或者服务器本身就是恶意的，那么客户之间的通信消息就会泄漏。那么是否存在一种方式，只有通信双方能够加解密，作为传递信息的第三者（包括提供服务的运营商）无法获知明文呢？</p>
+<p>端到端加密（End-to-end encryption，E2EE）正是为了解决这个问题所产生的。书面定义：</p>
+<blockquote>
+<p>是一种只有参与通讯的用户可以读取信息的通信系统。 总的来说，它可以防止潜在的窃听者——包括电信供应商、互联网服务供应商甚至是该通讯系统的提供者——获取能够用以解密通讯的密钥</p>
+</blockquote>
+<p><img src="https://image.bdwms.com/FsloogA_7i-1j3xjYAGESskUdDRG"></p>
+<p>今天我就想围绕着端到端加密的设计来做分析，回答一些我认为比较关键的问题，而不仅仅是复述过程（网上很多文章只是简单介绍了该概念和流程，而没有说明为什么要这样设计），当然因为本人的能力有限，如有错误请指正。</p>
+<h2 id="业界现状"><a href="#业界现状" class="headerlink" title="业界现状"></a>业界现状</h2><p>伴随着美国棱镜门监控事件，人们越来越看重个人隐私保护，将自己的机密通话消息托管给服务商不再可信。为此诞生了很多端到端通信的IM应用，号称能够实现只有两个人知晓的加密通信，其中主流的几个包括Telegram，Whatsapp，Skype等，能力图如下：</p>
+<p><img src="http://image.bdwms.com/Fmt3m8FcP5srMMrRjsqKDpdwSKgZ"></p>
+<p>而对于如何做到端到端加密，除了Telegram自己设计了一套MTProto协议（我暂时还没研究，因为它的资料不是那么全），大部分应用使用的都是Signal协议作为它们的基础。</p>
+<p>Signal作为一个开源的协议，已经被众多安全专家肯定了它的安全性，并且Signal团队也开源了相关库和客户端，服务端代码，是值得信赖的。但是在其上实现的其他应用是否值得相信又是值得商榷的，比如Whatsapp被Facebook收购，Facebook又曾经加入过棱镜计划，并且Whatsapp本身是不开源的，虽然它宣扬自己是基于Signal实现的完全端到端加密，但是究竟如何还是耐人寻味。</p>
+<p>以上就是端到端加密的一些背景，下面我将会介绍和分析协议中最为核心的部分，看看Signal是如何实现端到端加密通信的。</p>
+<h2 id="Signal协议简介"><a href="#Signal协议简介" class="headerlink" title="Signal协议简介"></a>Signal协议简介</h2><p>Signal协议主要由几个部分组成，在官方文档中有四篇文章分别为：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://signal.org/docs/specifications/xeddsa/">XEdDSA and VXEdDSA</a>：介绍了如何将做ECDH密钥交换的椭圆曲线，转换为可以做数字签名。</li>
+<li><a target="_blank" rel="noopener" href="https://signal.org/docs/specifications/x3dh/">X3DH</a>：将DH算法进行拓展。用于在两个客户端建立共享密钥，提供异步通信能力，身份验证（但是不防中间人，很奇怪是吧，后面我会解释），一定的前向安全性，以及可否认性。</li>
+<li><a target="_blank" rel="noopener" href="https://signal.org/docs/specifications/doubleratchet/">Double Ratchet</a>：双棘轮算法，结合了对称密钥棘轮和DH棘轮，保证了前向安全和后向安全。</li>
+<li><a target="_blank" rel="noopener" href="https://signal.org/docs/specifications/sesame/">Sesame</a>：用来做多设备多用户的同步管理。</li>
+</ul>
+<p>受篇幅限制，我决定挑出X3DH和Double Ratchet来做分析，个人认为这也是Signal协议中最为核心的点。</p>
+<h2 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h2><h3 id="DH类算法"><a href="#DH类算法" class="headerlink" title="DH类算法"></a>DH类算法</h3><p>Diffie–Hellman和基于椭圆曲线的Diffie–Hellman算法，用于两方进行密钥协商，详细介绍请看<a target="_blank" rel="noopener" href="https://blog.csdn.net/qmickecs/article/details/76585303">离散对数和椭圆曲线加密原理</a>，简化表述：<br>第一种基于有限域上的离散对数问题：<br><strong>已知x和G，求G^x mod p是简单的；反过来已知G^x mod p和G，求x是困难的。</strong></p>
+<p>第二种是基于椭圆曲线上的离散对数问题，即ECDH类，口语化表达类似：<br><strong>已知x和G，求xG是简单的（椭圆曲线上的运算，不是简单的数乘）；反过来已知xG和G，求x是困难的。</strong></p>
+<p>所以一般我们把x作为私钥，xG（G^x）为公钥，使用的过程类似：</p>
+<ol>
+<li>服务端拥有私钥a，客户端拥有私钥b，第一次服务端发送公钥aG和参数G。</li>
+<li>客户端接受到后计算bG，发送自己的公钥bG至服务端。</li>
+<li>此时客户端拥有aG和b，服务端拥有bG和a，双方经过计算a(bG)=b(aG)=abG，得出相同的会话数据。</li>
+</ol>
+<p>此时中间人只能截获aG，bG和G，无法求出abG，因为想要求出的话记必须通过aG和G（bG和G）计算出a（b），但是从上文的条件可以看出这是困难的，由此这就是DH类算法的原理。</p>
+<p><img src="http://image.bdwms.com/FpcwsX8mQoxRoZVp1cPJ5bMnpTFv"></p>
+<h3 id="前向安全，后向安全"><a href="#前向安全，后向安全" class="headerlink" title="前向安全，后向安全"></a>前向安全，后向安全</h3><blockquote>
+<p>前向安全：长期使用的主密钥泄漏不会导致过去的会话密钥泄漏。</p>
+<p>后向安全：长期使用的主密钥泄漏不会导致之后的会话密钥泄漏。</p>
+</blockquote>
+<p>通俗点说就是某个密钥泄漏不会对之前或者之后的加密消息有影响，例如在TLS中如果使用ECDHE，DHE就可以保证前向安全，因为协商的私钥都是临时生成的。</p>
+<h2 id="Signal之X3DH协议"><a href="#Signal之X3DH协议" class="headerlink" title="Signal之X3DH协议"></a>Signal之X3DH协议</h2><h3 id="设计目的"><a href="#设计目的" class="headerlink" title="设计目的"></a>设计目的</h3><p>回想下端到端加密的目的，我们要实现一个只有通信双方能够加解密的过程，包括提供消息转发的服务器也不知道明文，那么服务端不会存储明文，通信的客户单A和B就需要直接协商出一个对称密钥来做加密传输，也就是说设计的协议需要提供离线<strong>异步协商对称密钥</strong>的能力。</p>
+<p>并且为了保证通信双方的身份不与消息强绑定，协议需要提供<strong>可否认性</strong>，即两方都可以否认之间曾经存在会话，这与TLS的不可否认性正好相反，加大了第三方取证的难度。</p>
+<p>最后为了安全性，<strong>对抗密钥泄漏</strong>可能造成的安全问题，例如前向安全，身份伪造等，协议还添加了额外的过程来做防御。</p>
+<p>总之X3DH的最终目的就是协商出一个对称密钥，并保证上面所说的的几个特性，接下来我们来看下相关的定义概念。</p>
+<h3 id="相关概念"><a href="#相关概念" class="headerlink" title="相关概念"></a>相关概念</h3><p>首先约定会用到的角色，密码学函数以及相关参数。</p>
+<p>三个角色：</p>
+<ul>
+<li>Alice：会话的发起者。</li>
+<li>Bob：会话的响应者。</li>
+<li>Server：存储Alice发送给Bob的消息，以及存储一些客户端信息用于密钥协商。</li>
+</ul>
+<p>密码学函数：</p>
+<ul>
+<li>DH(PK1,PK2)：使用PK1和PK2相对应的公私钥进行ECDH的计算，生成一个共享密钥。</li>
+<li>Sig(PK,M)：使用PK对应的私钥对M做签名，验证的时候时候用相应的公钥。</li>
+<li>KDF(KM)：KM是包含密钥的序列，利用HKDF密钥派生函数做拓展衍生出新的密钥。</li>
+</ul>
+<p>会使用到的参数密钥：</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>IKA</td>
+<td>Alice的身份密钥</td>
+</tr>
+<tr>
+<td>EKA</td>
+<td>Alice的临时密钥</td>
+</tr>
+<tr>
+<td>IKB</td>
+<td>Bob的身份密钥</td>
+</tr>
+<tr>
+<td>SPKB</td>
+<td>Bob的被签名预密钥</td>
+</tr>
+<tr>
+<td>OPKB</td>
+<td>Bob的一次性预密钥</td>
+</tr>
+</tbody></table>
+<p>这些都是成对出现的公私钥，但是为了简化描述，我们这里只关注公钥的使用。</p>
+<p>通信的双方都会持有一个身份密钥例如Alice的IKA，Bob的IKB。</p>
+<p>Bob持有一个被IKB签名的预密钥SPKB，SPKB会周期性地替换。同时Bob还会有一组一次性预密钥OPKB，每发起一次X3DH协商，就会消耗一个OPKB。（之所以叫预密钥是因为SPKB和OPKB都会在Alice发起会话之前发送到服务器）</p>
+<p>每一次发起X3DH协议，Alice都会生成一个临时密钥EKA。</p>
+<p>经过一次X3DH密钥协商，Alice和Bob会协商出一个32字节的共享密钥SK，这个SK（或者用HKDF函数拓展这个SK）会用在后面的其他协议。</p>
+<h3 id="基本架构"><a href="#基本架构" class="headerlink" title="基本架构"></a>基本架构</h3><p>基本流程为三个部分：</p>
+<ol>
+<li>Bob将自己的IKB和prekey发送到服务端。</li>
+<li>Alice从服务器获取一组Bob的公钥，然后使用它生成SK，之后发送初始化信息发送给Bob。</li>
+<li>Bob接受初始化消息，并验证生成相应的SK。</li>
+</ol>
+<p>然后我们来看下具体的步骤，首先Bob生成相应的公私钥：</p>
+<ul>
+<li>Bob的身份密钥IKB</li>
+<li>Bob的被签名预密钥SPKB</li>
+<li>Bob的预密钥签名Sig(IKB,Encode(SPKB))，就是用IKB对SPKB做一个签名生成的信息</li>
+<li>Bob的一组临时预密钥OPKB1，OPKB2，OPKB3…</li>
+</ul>
+<p>然后Bob发送这些到服务器上（Alice其实也会生成发送一组上列信息上传给服务器，但是在一次会话中只会用到Alice的身份密钥IKA），Bob会周期性地更换SPKB，并替换之前旧的SPKB，可能会继续持有一段时间SPKB的私钥以处理延时的消息，之后会删除私钥以保证前向安全（Bob同样会删除一次性预密钥的私钥当收到相应的初始化消息后）</p>
+<p><img src="http://image.bdwms.com/Fk0ETNDhliXg1lnoYC9zWBqgb_Jm"></p>
+<p>之后正式开始协商过程，Alice首先会向服务器请求Bob的相关信息，包括：</p>
+<ul>
+<li>Bob的身份公钥IKB</li>
+<li>Bob的被签名预密钥SPKB</li>
+<li>Bob的预密钥签名Sig(IKB,Encode(SPKB))</li>
+<li>Bob的一次性预密钥（可选的，当服务器中还有的时候发送）</li>
+</ul>
+<p>然后Alice会生成一组临时密钥EKA，进行密钥计算</p>
+<p><img src="http://image.bdwms.com/FpFG1oXDRRgK4RsEdKjX8tTIzn8G"></p>
+<p>没有OPKB的时候：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">DH1 &#x3D; DH(IKA, SPKB)</span><br><span class="line">DH2 &#x3D; DH(EKA, IKB)</span><br><span class="line">DH3 &#x3D; DH(EKA, SPKB)</span><br><span class="line">SK &#x3D; KDF(DH1 || DH2 || DH3)</span><br></pre></td></tr></table></figure>
+<p>有OPKB的时候，多了个DH4：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">DH4 &#x3D; DH(EKA, OPKB)</span><br><span class="line">SK &#x3D; KDF(DH1 || DH2 || DH3 || DH4)</span><br></pre></td></tr></table></figure>
+<p>其中DH1和DH2提供相互认证，DH3和DH4提供前向安全，后面我会解释。</p>
+<p>之后Alice删除EKA的私钥和中间计算的DH值，并使用身份信息计算一个“associated data”即AD，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AD &#x3D; Encode(IKA) || Encode(IKB)</span><br></pre></td></tr></table></figure>
+<p><img src="http://image.bdwms.com/FkpAO81vOvXytc1IBD3-_ligehZB"></p>
+<p>随后Alice发送初始化消息，包含：</p>
+<ul>
+<li>Alice的身份密钥IKA</li>
+<li>Alice的临时密钥EKA</li>
+<li>Alice使用的Bob的被签名预密钥的标志号（如果使用了OPKB，那么还有OPKB的标志号）</li>
+<li>一段初始化文本，AEAD模式加密，其中AD作为输入的associated data，使用SK（或HKDF函数拓展SK）作为加密的密钥</li>
+</ul>
+<p>Bob接受初始化消息后，就能得知Alice的身份密钥，EKA所代表的临时公钥，Alice使用的SPKB和OPKB，通过相同的方式计算出SK和AD（同样计算完后删除中间的DH值），然后解密初始化文本，如果解密成功，会删除一次性密钥的私钥，保证前向安全性。</p>
+<p><img src="http://image.bdwms.com/FnqmNz5WOFDmV1ainf1IhqDazzng"></p>
+<p>这样子最终Alice和Bob就持有了相同的SK或由HKDF函数拓展SK的新密钥。</p>
+<h3 id="问题解析"><a href="#问题解析" class="headerlink" title="问题解析"></a>问题解析</h3><p>虽然上面阐述了一遍X3DH的过程，但是想必大部分人看完后都是一头雾水。这些参数的作用是什么，为什么这样设计计算过程，这样的交换是如何实现设计目标的等等，接下来我就会结合官方文档和自己的理解进行解释。</p>
+<ol>
+<li><p>DH1和DH2是如何完成相互认证的，DH3和DH4如何提供前向安全的？</p>
+<p>Bob和Alice都会上传自己的身份密钥，通过两次DH计算，即Alice通过Pri_Alice和Pub_Bob(IKB)进行计算，Bob通过Pri_Bob和Pub_Alice(IKA)进行计算，就能确保对方的确持有相应的私钥。</p>
+<p>DH3通过EKA和SPKB进行计算，因为EKA是每次临时生成的，并且其私钥会在计算出DH结果后丢弃，所以能提供前向安全性。同理OPKB也是只使用一次，并且在计算出结果后丢弃私钥，提供更强的前向安全性。</p>
+</li>
+<li><p>X3DH的可否认性？</p>
+<p>首先说明可否性指的是通信双方即Alice和Bob无法向第三方例如Carol证明两者间曾进行过会话。形象点说Alice想要举报Bob，但是Alice不能够证明给法官Carol说Alice和Bob两人间曾经通过信，就算Alice展示两者的会话消息，Bob也可以否认说这是Alice自己伪造的。</p>
+<p>为什么呢？首先Bob的身份密钥IKB和被签名预密钥SPKB都是公开的，任何人都可以获取，因此Alice可以自己单独计算出SK，并发送给Bob初始化消息，但是此时Bob是可以选择不计算出SK的，Alice并没有显示的证据（例如TLS中Server主动的数字签名下发给客户端），所以无法证明Bob持有同样的密钥。同样因为EKA在使用完后会丢弃私钥，Bob同样无法证明Alice是持有相同的SK密钥。综上X3DH的相互认证是不可向第三方证明的，具有可否认性。</p>
+</li>
+<li><p>存在中间人攻击？</p>
+<p>我们通过上面的分析，会发现一个问题：Alice和Bob在进行相互认证的时候，Bob其实只是收到了一个身份密钥，就算它成功计算出相同的SK，那又怎么证明这个身份密钥确实是Alice的呢？可能存在一个中间人David截获了Alice和Bob的对话，并替换Alice的身份密钥IKA为自己的IKD，Bob只会知道它通信的对端的确持有IKD的私钥，而无法得知对端是否为Alice。</p>
+<p>也就是说X3DH的相互认证只能说是一个身份的绑定，而不能确保通信对端的确是真正想通信的人，这也是上面<strong>可否认性带来的必然结果</strong>，在像TLS的协议中是存在一个可信第三方进行显示证明通信双方身份的，但X3DH是不存在这样的角色。因此为了解决这个问题，在Alice和Bob建立对话后会用带外通信的方式进行身份确认IKA和IKB，例如扫二维码，比较公钥指纹等手段来避免中间人攻击。</p>
+</li>
+<li><p>临时预密钥有什么作用，为什么它是可选的？</p>
+<p>笼统的说是为了前向安全性。详细点说，当不存在OPKB的时候，Bob会长期持有IKB和一定时间内持有SPKB，当攻击者攻破Bob后能拿到IKB和SPKB，并通过观察网络流量记录拿到之前的EKA，这样攻击者就能解密之前的消息了，因此当没有OPKB的时候前向安全会下降。当然OPKB被消耗完时，EKA一般会经过TLS加密，还是能保证一定程度的前向安全的，所以OPKB也不是说必须有。</p>
+</li>
+<li><p>为什么需要SPKB呢，SPKB为什么一定需要被IKB签名呢？</p>
+<p>当不存在SPKB的时候，只有OPKB，如果存在攻击者恶意DDOS发起会话，会迅速消耗OPKB，当消耗完后，就无法与B正常通信了（虽然可以通过服务端进行一些限频等手段防DDOS，但还是更应该从协议层来做一定的防范）。那么为什么SPKB需要被IKB签名呢，官方文档是这么解释的，虽然看起来省略签名的步骤会提高效率，但是可能服务器是恶意的，Alice发起通信后提供给Alice的是伪造的预密钥，然后服务器恶意泄漏B的IKB就可能可以计算出SK了，从而解析Alice想要发送的信息。</p>
+</li>
+</ol>
+<p>以上就是我觉得官方文档中没有解释清楚的，还有几个问题例如重放攻击，密钥泄漏危害讲的比较清楚了，可以直接参考<a target="_blank" rel="noopener" href="https://signal.org/docs/specifications/x3dh/">官方文档</a>。</p>
+<h2 id="Signal之双棘轮"><a href="#Signal之双棘轮" class="headerlink" title="Signal之双棘轮"></a>Signal之双棘轮</h2><h3 id="设计目的-1"><a href="#设计目的-1" class="headerlink" title="设计目的"></a>设计目的</h3><p>对于X3DH，保证了一定的前向安全，但是还不足够，为了在真正意义上实现前向安全和后向安全，Signal协议设计了一个双棘轮（Double Ratchet），即用对称密钥棘轮棘轮（Symmetric-key ratchet）保证前向安全，DH棘轮保证后向安全。</p>
+<h3 id="KDF链"><a href="#KDF链" class="headerlink" title="KDF链"></a>KDF链</h3><p>KDF链是保证前向安全的核心</p>
+<p><img src="http://image.bdwms.com/FiJ3s3vnlHhYcuVbaMUm86m-2r0H"></p>
+<p>两个输入一个为密钥，一个是输入材料，输出切分为两部分，一部分作为下一轮的输入密钥，一部分作为本轮输出key，这样子保证了足够的前向安全，弹性，入侵恢复（<a target="_blank" rel="noopener" href="https://signal.org/docs/specifications/doubleratchet/#kdf-chains">参考文档</a>）。</p>
+<h3 id="Symmetric-key棘轮"><a href="#Symmetric-key棘轮" class="headerlink" title="Symmetric-key棘轮"></a>Symmetric-key棘轮</h3><p><img src="http://image.bdwms.com/Fj5q6pnm-ekb5E-NyGI09UQ7LO6s"></p>
+<p>每个消息都使用唯一的message key加密，message key从chain链中导出保证了前向安全，但是因为输入的是constant所以无法保证后向安全，如果攻击者拿到了chain key就可以计算出之后的message key。在双棘轮中会有三个链分别为Root Chain，Sending Chain和Receiving Chain。</p>
+<h3 id="DH棘轮"><a href="#DH棘轮" class="headerlink" title="DH棘轮"></a>DH棘轮</h3><p>DH棘轮保证后向安全，因为每次都会重新计算DH密钥。Bob发送公钥至Alice，Alice使用Bob的公钥Pub_B和自己的私钥Pri_A计算出一个DH1，然后Alice发送自己的公钥Pub_A，Bob结合自己的私钥Pri_A计算出相同的DH1。之后Bob生成新的密钥对，发送自己新的公钥Pub_B2，重复上面的过程，这样每一次都会计算出一个新的DH结果，保证了中间某次密钥泄漏，不会影响后面的消息加解密，这就是DH棘轮。</p>
+<p><img src="http://image.bdwms.com/Fk4VYjCBKmc4C-F9Ly_69GIgKOVv"></p>
+<p>然后会利用一个来回生成两组发送和接受链。</p>
+<p><img src="http://image.bdwms.com/FkFdHpvNC0MepPUWB-qJ0KjUHI41"></p>
+<h3 id="双棘轮的组合"><a href="#双棘轮的组合" class="headerlink" title="双棘轮的组合"></a>双棘轮的组合</h3><p>综上，通过组合以上两个棘轮就保证了前向安全和后向安全，DH棘轮生成的DH作为Root Chain的输入，来产生Sending Chain和Receiving Chain。</p>
+<p><img src="http://image.bdwms.com/FqSh4YL63VL3QsoY5yjCWrfJVM9L"></p>
+<p>然后看下实际的交互情况，会从Root Chain导出Sending Chain和Receiving Chain，然后Sending Chain和Receiving Chain会生成每个消息单独的message key。</p>
+<p><img src="http://image.bdwms.com/FguqVlzdQnO4gZZoi5Mcc09j3X7l"></p>
+<h3 id="失序处理"><a href="#失序处理" class="headerlink" title="失序处理"></a>失序处理</h3><p>当消息乱序发送时，会在消息头中维护消息序列和上一个链的长度，然后失序到达时保存未到的消息的对应的message key，例如下面B4到了B2和B3没到，头信息为N=1,Pn=2，所以可以推算出哪些没到，并保存这些消息的对应密钥。</p>
+<p><img src="http://image.bdwms.com/FvTSBrq41uZsyEA6ykg3YSsy5P5A"></p>
+<h3 id="X3DH结合双棘轮"><a href="#X3DH结合双棘轮" class="headerlink" title="X3DH结合双棘轮"></a>X3DH结合双棘轮</h3><p>X3DH商量的SK作为Root key，协商出的AD作为棘轮加密时用的AD，Bob的Prekey作为Bob初始棘轮公钥。X3DH的主要任务就是为了生成这个root chain的key。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>通过以上的描述我们大致了解了Signal协议是如何做到端到端加密的，真正意义上解决了第三者插入会话的问题，并且提供了可否认性，加强了前后向安全与对抗密钥泄漏。但是对于还有很多问题没有回答，比如如何做到多设备管理（Sesame），如何进行群组会话支持端到端加密（参考WhatsApp白皮书），如何做到多服务器负载均衡下的通信。同时我们要知道，就算在协议设计上没有问题，但是可能因为攻击者直接攻破接管了客户端等等类似的问题，影响到端到端通信之间的安全，所以要铭记一点：没有绝对的安全，我们只能尽量接近安全。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><p><a target="_blank" rel="noopener" href="https://faq.whatsapp.com/general/security-and-privacy/end-to-end-encryption/?lang=en">WhatsApp E2EE</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://faq.whatsapp.com/general/security-and-privacy/end-to-end-encryption/?lang=en">WhatsApp白皮书翻译</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://signal.org/docs/specifications/x3dh/">X3DH官方文档</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://signal.org/docs/specifications/doubleratchet/">双棘轮官方文档</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qmickecs/article/details/76585303">离散对数和椭圆曲线加密原理</a></p>
+</li>
+</ul>
+
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/categories/">Category</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86"><span class="toc-number">1.</span> <span class="toc-text">什么是端到端加密</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%9A%E7%95%8C%E7%8E%B0%E7%8A%B6"><span class="toc-number">2.</span> <span class="toc-text">业界现状</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Signal%E5%8D%8F%E8%AE%AE%E7%AE%80%E4%BB%8B"><span class="toc-number">3.</span> <span class="toc-text">Signal协议简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86"><span class="toc-number">4.</span> <span class="toc-text">预备知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#DH%E7%B1%BB%E7%AE%97%E6%B3%95"><span class="toc-number">4.1.</span> <span class="toc-text">DH类算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E5%90%91%E5%AE%89%E5%85%A8%EF%BC%8C%E5%90%8E%E5%90%91%E5%AE%89%E5%85%A8"><span class="toc-number">4.2.</span> <span class="toc-text">前向安全，后向安全</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Signal%E4%B9%8BX3DH%E5%8D%8F%E8%AE%AE"><span class="toc-number">5.</span> <span class="toc-text">Signal之X3DH协议</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1%E7%9B%AE%E7%9A%84"><span class="toc-number">5.1.</span> <span class="toc-text">设计目的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="toc-number">5.2.</span> <span class="toc-text">相关概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84"><span class="toc-number">5.3.</span> <span class="toc-text">基本架构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E8%A7%A3%E6%9E%90"><span class="toc-number">5.4.</span> <span class="toc-text">问题解析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Signal%E4%B9%8B%E5%8F%8C%E6%A3%98%E8%BD%AE"><span class="toc-number">6.</span> <span class="toc-text">Signal之双棘轮</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1%E7%9B%AE%E7%9A%84-1"><span class="toc-number">6.1.</span> <span class="toc-text">设计目的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#KDF%E9%93%BE"><span class="toc-number">6.2.</span> <span class="toc-text">KDF链</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Symmetric-key%E6%A3%98%E8%BD%AE"><span class="toc-number">6.3.</span> <span class="toc-text">Symmetric-key棘轮</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DH%E6%A3%98%E8%BD%AE"><span class="toc-number">6.4.</span> <span class="toc-text">DH棘轮</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8C%E6%A3%98%E8%BD%AE%E7%9A%84%E7%BB%84%E5%90%88"><span class="toc-number">6.5.</span> <span class="toc-text">双棘轮的组合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%B1%E5%BA%8F%E5%A4%84%E7%90%86"><span class="toc-number">6.6.</span> <span class="toc-text">失序处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#X3DH%E7%BB%93%E5%90%88%E5%8F%8C%E6%A3%98%E8%BD%AE"><span class="toc-number">6.7.</span> <span class="toc-text">X3DH结合双棘轮</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">7.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">8.</span> <span class="toc-text">参考</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/&text=两个人的秘密-端到端加密"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/&title=两个人的秘密-端到端加密"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/&is_video=false&description=两个人的秘密-端到端加密"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=两个人的秘密-端到端加密&body=Check out this article: http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/&title=两个人的秘密-端到端加密"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/&title=两个人的秘密-端到端加密"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/&title=两个人的秘密-端到端加密"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/&title=两个人的秘密-端到端加密"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/&name=两个人的秘密-端到端加密&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2021/01/20/%E4%B8%A4%E4%B8%AA%E4%BA%BA%E7%9A%84%E7%A7%98%E5%AF%86-%E7%AB%AF%E5%88%B0%E7%AB%AF%E5%8A%A0%E5%AF%86/&t=两个人的秘密-端到端加密"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2018-2021
+    <a target="_blank" rel="noopener" href="https://www.bdwms.site">bdwms<a>
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/categories/">Category</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+  <a target="_blank" rel="noopener" href="http://beian.miit.gov.cn/">皖ICP备18025933号-3</a>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+
+    <!-- jquery -->
+
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+
+<!-- clipboard -->
+
+  
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'bdwms-com';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+
+</body>
+</html>
