@@ -9,7 +9,7 @@
     <meta name="description" content="在开始正文前，我想先谈谈为什么要写这篇文章，为什么要对TLS协议进行分析？ 打开网站时我们经常能看到左上角的小绿锁，而TLS正是隐藏在后面的原由。对于大部分程序员，多多少少都可以聊一聊TLS的几分样貌，但是能真正的从其整体发散到细节，从理念落地到实践，以更高的角度去理解TLS是很少的。因此这里想要从我个人的角度，去理清TLS，解读这个将密码科学和软件工程良好结合的优秀设计，也希望能够给读者有所帮助">
 <meta property="og:type" content="article">
 <meta property="og:title" content="从TLS看安全协议设计（上）">
-<meta property="og:url" content="http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/index.html">
+<meta property="og:url" content="http://example.com/TLS-design-part-one/index.html">
 <meta property="og:site_name" content="BDWMS">
 <meta property="og:description" content="在开始正文前，我想先谈谈为什么要写这篇文章，为什么要对TLS协议进行分析？ 打开网站时我们经常能看到左上角的小绿锁，而TLS正是隐藏在后面的原由。对于大部分程序员，多多少少都可以聊一聊TLS的几分样貌，但是能真正的从其整体发散到细节，从理念落地到实践，以更高的角度去理解TLS是很少的。因此这里想要从我个人的角度，去理清TLS，解读这个将密码科学和软件工程良好结合的优秀设计，也希望能够给读者有所帮助">
 <meta property="og:locale" content="en_US">
@@ -20,7 +20,7 @@
 <meta property="og:image" content="https://image.bdwms.com/FvHsGjuxiuWLnIXz04eK4pLkoOm4">
 <meta property="og:image" content="https://image.bdwms.com/FgkGgBr3d1jnp_3ycicaEH7BkSCB">
 <meta property="article:published_time" content="2021-01-10T03:39:03.000Z">
-<meta property="article:modified_time" content="2021-02-22T11:34:26.521Z">
+<meta property="article:modified_time" content="2021-02-22T11:53:16.385Z">
 <meta property="article:author" content="bdwms">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://image.bdwms.com/FvB5KJRP8BMLJtatrdl8yHLHZFKZ">
@@ -85,10 +85,10 @@
     <span id="actions">
       <ul>
         
-        <li><a class="icon" href="/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8B%EF%BC%89/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        <li><a class="icon" href="/TLS-design-part-two/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
         
         
-        <li><a class="icon" href="/%E5%86%8D%E8%B5%B7%E8%88%AA%EF%BC%8C2021/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        <li><a class="icon" href="/Hello-2021/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
         
         <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
         <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
@@ -101,17 +101,17 @@
     <br/>
     <div id="share" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/&text=从TLS看安全协议设计（上）"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/&title=从TLS看安全协议设计（上）"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/&is_video=false&description=从TLS看安全协议设计（上）"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=从TLS看安全协议设计（上）&body=Check out this article: http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/&title=从TLS看安全协议设计（上）"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/&title=从TLS看安全协议设计（上）"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/&title=从TLS看安全协议设计（上）"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/&title=从TLS看安全协议设计（上）"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/&name=从TLS看安全协议设计（上）&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/&t=从TLS看安全协议设计（上）"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/TLS-design-part-one/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/TLS-design-part-one/&text=从TLS看安全协议设计（上）"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/TLS-design-part-one/&title=从TLS看安全协议设计（上）"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/TLS-design-part-one/&is_video=false&description=从TLS看安全协议设计（上）"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=从TLS看安全协议设计（上）&body=Check out this article: http://example.com/TLS-design-part-one/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/TLS-design-part-one/&title=从TLS看安全协议设计（上）"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/TLS-design-part-one/&title=从TLS看安全协议设计（上）"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/TLS-design-part-one/&title=从TLS看安全协议设计（上）"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/TLS-design-part-one/&title=从TLS看安全协议设计（上）"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/TLS-design-part-one/&name=从TLS看安全协议设计（上）&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/TLS-design-part-one/&t=从TLS看安全协议设计（上）"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -345,17 +345,17 @@
 
     <div id="share-footer" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/&text=从TLS看安全协议设计（上）"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/&title=从TLS看安全协议设计（上）"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/&is_video=false&description=从TLS看安全协议设计（上）"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=从TLS看安全协议设计（上）&body=Check out this article: http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/&title=从TLS看安全协议设计（上）"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/&title=从TLS看安全协议设计（上）"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/&title=从TLS看安全协议设计（上）"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/&title=从TLS看安全协议设计（上）"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/&name=从TLS看安全协议设计（上）&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/%E4%BB%8ETLS%E7%9C%8B%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1%EF%BC%88%E4%B8%8A%EF%BC%89/&t=从TLS看安全协议设计（上）"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/TLS-design-part-one/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/TLS-design-part-one/&text=从TLS看安全协议设计（上）"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/TLS-design-part-one/&title=从TLS看安全协议设计（上）"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/TLS-design-part-one/&is_video=false&description=从TLS看安全协议设计（上）"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=从TLS看安全协议设计（上）&body=Check out this article: http://example.com/TLS-design-part-one/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/TLS-design-part-one/&title=从TLS看安全协议设计（上）"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/TLS-design-part-one/&title=从TLS看安全协议设计（上）"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/TLS-design-part-one/&title=从TLS看安全协议设计（上）"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/TLS-design-part-one/&title=从TLS看安全协议设计（上）"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/TLS-design-part-one/&name=从TLS看安全协议设计（上）&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/TLS-design-part-one/&t=从TLS看安全协议设计（上）"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
