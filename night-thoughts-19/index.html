@@ -14,7 +14,7 @@
 <meta property="og:description" content="在每一个深夜苦苦思索  这是一篇很长的总结与思考。 我将自己沉浸在回忆中，记录下脑海中不断浮现的词汇： 「流星，太阳，戾气，善良，温暖，责任，自卑，抑郁，自闭，自责，迷茫，抉择，期许，普通，梦想，懒惰，命运，妥协，坚持，孤独，生命，美好，社会，交流，麻木，自大，偏见，贪婪，本心，意义，生理，环境，虚无，快乐，奋斗，焦虑，愤怒，亲情，友情，爱情，比较，浅薄，躲避，失败，成功，语言……」 我在深夜中">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-08-10T17:30:29.000Z">
-<meta property="article:modified_time" content="2022-01-08T16:35:40.694Z">
+<meta property="article:modified_time" content="2022-01-08T16:45:18.551Z">
 <meta property="article:author" content="bdwms">
 <meta name="twitter:card" content="summary">
     
@@ -215,12 +215,12 @@
   </div>
 </article>
 
+
     <div class="blog-post-comments">
-        <div id="disqus_thread">
+        <div id="utterances_thread">
             <noscript>Please enable JavaScript to view the comments.</noscript>
         </div>
     </div>
-
 
 
         
@@ -369,19 +369,27 @@
 
 <!-- Disqus Comments -->
 
-    <script type="text/javascript">
-        var disqus_shortname = 'bdwms-com';
-
-        (function(){
-            var dsq = document.createElement('script');
-            dsq.type = 'text/javascript';
-            dsq.async = true;
-            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-        }());
-    </script>
-
 <!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'birdmanwings/birdmanwings.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = 'Comment';
+      var utterances_theme = 'github-dark';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
 
 </body>
 </html>
