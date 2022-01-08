@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
     <meta name="description" content="在开始正文前，我想先谈谈为什么要写这篇文章，为什么要对TLS协议进行分析？ 打开网站时我们经常能看到左上角的小绿锁，而TLS正是隐藏在后面的原由。对于大部分程序员，多多少少都可以聊一聊TLS的几分样貌，但是能真正的从其整体发散到细节，从理念落地到实践，以更高的角度去理解TLS是很少的。因此这里想要从我个人的角度，去理清TLS，解读这个将密码科学和软件工程良好结合的优秀设计，也希望能够给读者有所帮助">
 <meta property="og:type" content="article">
 <meta property="og:title" content="从TLS看安全协议设计（上）">
@@ -20,7 +20,7 @@
 <meta property="og:image" content="https://image.bdwms.com/FvHsGjuxiuWLnIXz04eK4pLkoOm4">
 <meta property="og:image" content="https://image.bdwms.com/FgkGgBr3d1jnp_3ycicaEH7BkSCB">
 <meta property="article:published_time" content="2021-01-10T03:39:03.000Z">
-<meta property="article:modified_time" content="2022-01-08T15:06:05.791Z">
+<meta property="article:modified_time" content="2022-01-08T16:25:58.967Z">
 <meta property="article:author" content="bdwms">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://image.bdwms.com/FvB5KJRP8BMLJtatrdl8yHLHZFKZ">
@@ -50,48 +50,46 @@
 
     <!-- persian styles -->
     
-      
-<link rel="stylesheet" href="/css/rtl.css">
-
-    
     <!-- rss -->
     
     
+	<!-- mathjax -->
+	
 <meta name="generator" content="Hexo 5.3.0"></head>
 
 <body class="max-width mx-auto px3 ltr">
     
       <div id="header-post">
-  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
-  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
-  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
   <span id="menu">
     <span id="nav">
       <ul>
-         
-          <li><a href="/">Home</a></li>
-         
-          <li><a href="/archives/">Writing</a></li>
-         
-          <li><a href="/categories/">Category</a></li>
-         
-          <li><a href="/about/">About</a></li>
-         
-          <li><a href="/search/">Search</a></li>
-        
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Category</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     -->
       </ul>
     </span>
     <br/>
     <span id="actions">
       <ul>
         
-        <li><a class="icon" href="/TLS-design-part-two/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Previous post" href="/TLS-design-part-two/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
         
         
-        <li><a class="icon" href="/Hello-2021/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Next post" href="/Hello-2021/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
         
-        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
-        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
       </ul>
       <span id="i-prev" class="info" style="display:none;">Previous post</span>
       <span id="i-next" class="info" style="display:none;">Next post</span>
@@ -377,12 +375,12 @@
     
     
     2018-2022
-    <a target="_blank" rel="noopener" href="https://.bdwms.site">bdwms<a>
+    <a target="_blank" rel="noopener" href="https://bdwms.site">bdwms<a>
   </div>
   <div class="footer-right">
     <nav>
       <ul>
-          <li><a target="_blank" rel="noopener" href="http://beian.miit.gov.cn/">皖ICP备18025933号-3</a></li>
+          <li><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/">皖ICP备18025933号-3</a></li>
       </ul>
     </nav>
   </div>
@@ -391,24 +389,23 @@
     </div>
     <!-- styles -->
 
-<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
 
-<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
 
 
     <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
 
-<script src="/lib/jquery/jquery.min.js"></script>
 
 
-<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
 
 <!-- clipboard -->
 
   
-<script src="/lib/clipboard/clipboard.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
   <script type="text/javascript">
   $(function() {
     // copy-btn HTML
@@ -464,6 +461,7 @@
         }());
     </script>
 
+<!-- utterances Comments -->
 
 </body>
 </html>
