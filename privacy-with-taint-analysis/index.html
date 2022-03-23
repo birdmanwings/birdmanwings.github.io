@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="利用污点分析的思想，将漏洞挖掘的方法应用于隐私合规扫描。  伴随近年来监管，用户，厂商等多方对隐私合规问题的逐渐重视，各APP需要梳理其隐私相关行为，按照合规要求进行整改。然后问题在于，大型APP很难完全整理出隐私相关的调用链路，所以本篇文章从静态扫描的角度来分析如何排查完整隐私调用链路，以半自动化污点分析工具Jandroid为例，来说明污点分析在隐私合规中的实际应用。 隐私合规2021年开始，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="隐私合规——浅谈污点分析的应用">
+<meta property="og:url" content="http://example.com/privacy-with-taint-analysis/index.html">
+<meta property="og:site_name" content="BDWMS">
+<meta property="og:description" content="利用污点分析的思想，将漏洞挖掘的方法应用于隐私合规扫描。  伴随近年来监管，用户，厂商等多方对隐私合规问题的逐渐重视，各APP需要梳理其隐私相关行为，按照合规要求进行整改。然后问题在于，大型APP很难完全整理出隐私相关的调用链路，所以本篇文章从静态扫描的角度来分析如何排查完整隐私调用链路，以半自动化污点分析工具Jandroid为例，来说明污点分析在隐私合规中的实际应用。 隐私合规2021年开始，">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.bdwms.com/FttcbJUHl_O3temvPCoHbdCeRIH_">
+<meta property="og:image" content="https://image.bdwms.com/FmfFaqPEvJhOyfTee1RGJ7R_fCtB">
+<meta property="og:image" content="https://image.bdwms.com/FgjHuprp0C-e1qqnb7_6r1Dl0WRg">
+<meta property="og:image" content="https://image.bdwms.com/FiOMs1TSnb4TbycXBC6xHliP1X5-">
+<meta property="article:published_time" content="2022-02-27T07:30:49.000Z">
+<meta property="article:modified_time" content="2022-03-23T13:59:18.999Z">
+<meta property="article:author" content="bdwms">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.bdwms.com/FttcbJUHl_O3temvPCoHbdCeRIH_">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>隐私合规——浅谈污点分析的应用</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Category</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/information-database-talent/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/privacy-with-taint-analysis/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/privacy-with-taint-analysis/&text=隐私合规——浅谈污点分析的应用"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/privacy-with-taint-analysis/&title=隐私合规——浅谈污点分析的应用"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/privacy-with-taint-analysis/&is_video=false&description=隐私合规——浅谈污点分析的应用"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=隐私合规——浅谈污点分析的应用&body=Check out this article: http://example.com/privacy-with-taint-analysis/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/privacy-with-taint-analysis/&title=隐私合规——浅谈污点分析的应用"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/privacy-with-taint-analysis/&title=隐私合规——浅谈污点分析的应用"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/privacy-with-taint-analysis/&title=隐私合规——浅谈污点分析的应用"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/privacy-with-taint-analysis/&title=隐私合规——浅谈污点分析的应用"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/privacy-with-taint-analysis/&name=隐私合规——浅谈污点分析的应用&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/privacy-with-taint-analysis/&t=隐私合规——浅谈污点分析的应用"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9A%90%E7%A7%81%E5%90%88%E8%A7%84"><span class="toc-number">1.</span> <span class="toc-text">隐私合规</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B1%A1%E7%82%B9%E5%88%86%E6%9E%90"><span class="toc-number">2.</span> <span class="toc-text">污点分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Jandroid%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">Jandroid源码分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">5.</span> <span class="toc-text">参考</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        隐私合规——浅谈污点分析的应用
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bdwms</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-02-27T07:30:49.000Z" itemprop="datePublished">2022-02-27</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/SecDev/">SecDev</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <blockquote>
+<p>利用污点分析的思想，将漏洞挖掘的方法应用于隐私合规扫描。</p>
+</blockquote>
+<p>伴随近年来监管，用户，厂商等多方对隐私合规问题的逐渐重视，各APP需要梳理其隐私相关行为，按照合规要求进行整改。然后问题在于，大型APP很难完全整理出隐私相关的调用链路，所以本篇文章从静态扫描的角度来分析如何排查完整隐私调用链路，以半自动化污点分析工具Jandroid为例，来说明污点分析在隐私合规中的实际应用。</p>
+<h2 id="隐私合规"><a href="#隐私合规" class="headerlink" title="隐私合规"></a>隐私合规</h2><p>2021年开始，从十四五规划中可以看出，在安全领域隐私治理，反数据垄断成为新提出的重点方向。《个人信息保护法》，《数据安全法》等相关法律条令相继颁布并落地，监管加大对各APP的监察力度，多次指令下架多款APP，同时苹果，华为，小米等手机厂商对各自应用商店的上架要求也更为严格。</p>
+<ul>
+<li>个人信息保护法律健全完善</li>
+<li>监管常态化巡检与专项治理</li>
+<li>用户隐私感知能力重点关注</li>
+<li>厂商审计监察标准逐步提升</li>
+</ul>
+<h2 id="污点分析"><a href="#污点分析" class="headerlink" title="污点分析"></a>污点分析</h2><p>简单介绍污点分析思想：</p>
+<blockquote>
+<p>污点分析可以抽象成一个三元组<code>&lt;sources,sinks,sanitizers&gt;</code>的形式,其中,<code>source</code> 即污点源,代表直接引入不受信任的数据或者机密数据到系统中;<code>sink</code> 即污点汇聚点,代表直接产生安全敏感操作(违反数据完整性)或者泄露隐私数据到外界(违反数据保密性);<code>sanitizer</code> 即无害处理,代表通过数据加密或者移除危害操作等手段使数据传播不再对软件系统的信息安全产生危害.污点分析就是分析程序中由污点源引入的数据是否能够不经无害处理,而直接传播到污点汇聚点.如果不能,说明系统是信息流安全的;否则,说明系统产生了隐私数据泄露或危险数据操作等安全问题.</p>
+</blockquote>
+<p>污点分析主要又分为静态污点分析和动态污点分析</p>
+<ul>
+<li>静态污点传播分析(简称静态污点分析)是指在不运行且不修改代码的前提下,通过分析程序变量间的数据依赖关系来检测数据能否从污点源传播到污点汇聚点。</li>
+<li>动态污点传播分析(简称动态污点分析)是指在程序运行过程中,通过实时监控程序的污点数据在系统程序中的传播来检测数据能否从污点源传播到污点汇聚点。</li>
+</ul>
+<p>在本篇文章中主要介绍静态污点分析的应用，Jandroid基于androguard的函数调用关系，应用结构分析，是F-Secure LABS团队开发的用于半自动化逻辑漏洞挖掘工具，同时Jandroid也可以应用于隐私合规，静态代码分析出隐私API链路分析，从而帮助开发者排除整改违规隐私调用。</p>
+<h2 id="Jandroid源码分析"><a href="#Jandroid源码分析" class="headerlink" title="Jandroid源码分析"></a>Jandroid源码分析</h2><p>首先新建一个Android项目作为例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.webviewdemo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.os.Bundle;</span><br><span class="line"><span class="keyword">import</span> android.webkit.WebView;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> androidx.appcompat.app.AppCompatActivity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line"></span><br><span class="line">        wrap();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">wrap</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        WebView webView = (WebView) findViewById(R.id.webview);</span><br><span class="line">        webView.loadUrl(<span class="string">&quot;https://baidu.com/&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>配置下项目环境，编译好的apk文件方apps目录，jandroid.py是主程序</p>
+<p><img src="https://image.bdwms.com/FttcbJUHl_O3temvPCoHbdCeRIH_"></p>
+<p><img src="https://image.bdwms.com/FmfFaqPEvJhOyfTee1RGJ7R_fCtB"></p>
+<p>分析函数为WebView.loadUrl，反向推演出调用链路。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;METADATA&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;NAME&quot;</span>: <span class="string">&quot;JSbridgeBrowsable&quot;</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;CODEPARAMS&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;TRACE&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;TRACEFROM&quot;</span>: <span class="string">&quot;&lt;method&gt;:Landroid/webkit/WebView;-&gt;loadUrl(Ljava/lang/String;)V&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;TRACETO&quot;</span>: <span class="string">&quot;&lt;method&gt;:Lcom/example/webviewdemo/MainActivity;-&gt;wrap()V&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;TRACELENGTHMAX&quot;</span>: <span class="number">10</span>,</span><br><span class="line">            <span class="attr">&quot;RETURN&quot;</span>: <span class="string">&quot;&lt;tracepath&gt; AS @tracepath_browsablejsbridge&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;GRAPH&quot;</span>: <span class="string">&quot;@tracepath_browsablejsbridge WITH &lt;method&gt;:&lt;desc&gt;:&lt;class&gt; AS attribute=nodename&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>开始断点调试来分析Jandroid的运行流程：</p>
+<ol>
+<li><p>直接进入到fn_analyse_apps函数，之前是参数解析，验证，是否从手机拉取APP等</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Create two process queues: one for sending data to,</span></span><br><span class="line"><span class="comment">#  and one for receiving data from, worker processes.</span></span><br><span class="line">process_send_queue = JoinableQueue()</span><br><span class="line">process_receive_queue = JoinableQueue()</span><br></pre></td></tr></table></figure>
+<p>创建两个队列来作为生产者和消费者进行对dex的处理，包括对队列的停止消息发送，异常处理</p>
+</li>
+<li><p>跟进到fn_perform_analysis，根据template生成bug object对每个app，进行一些初始化处理</p>
+</li>
+<li><p>fn_per_bug_analysis根据参数是CODEPARAMS还是MANIFESTPARAMS进行分别处理</p>
+</li>
+<li><p>fn_handle_code_analysis记录满足bug elements的数量</p>
+</li>
+<li><p>fn_perform_code_analysis处理是否满足整个搜索链路</p>
+</li>
+<li><p>fn_determine_action根据SEARCH还是TRACE</p>
+</li>
+<li><p>fn_perform_code_trace处理trace有多少个满足</p>
+</li>
+<li><p>fn_process_individual_trace_list_item中来分析处理trace_from，trace_to</p>
+</li>
+<li><p>fn_trace_through_code拆解出来class, method, decs，然后进入正式的搜索</p>
+</li>
+<li><p>fn_trace_reverse拿到starting point</p>
+</li>
+<li><p>fn_get_calls_to_method中找到符合sig的方法，然后从这个方法搜索xref_from，也就是调用这个方法的交叉引用</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># First get all methods that match the given signature.</span></span><br><span class="line">method_objs = self.fn_get_methods(</span><br><span class="line">    class_part,</span><br><span class="line">    method_part,</span><br><span class="line">    desc_part</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Now check the xref_from (i.e., calls to) for the method(s).</span></span><br><span class="line">calling_methods = []</span><br><span class="line"><span class="keyword">for</span> method_obj <span class="keyword">in</span> method_objs:</span><br><span class="line">    <span class="keyword">for</span> xref_from_elem <span class="keyword">in</span> method_obj.get_xref_from():</span><br><span class="line">        <span class="comment"># The xref_from_elem is a tuple where the second element</span></span><br><span class="line">        <span class="comment">#  is the EncodedMethod object.</span></span><br><span class="line">        method_name = xref_from_elem[<span class="number">1</span>].get_name()</span><br><span class="line">        <span class="comment"># If we don&#x27;t want anything with user interaction.</span></span><br><span class="line">        <span class="keyword">if</span> self.keep_user_interaction == <span class="literal">False</span>:</span><br><span class="line">            is_user_interaction = \</span><br><span class="line">                self.fn_check_for_user_interaction_element(</span><br><span class="line">                    method_name</span><br><span class="line">                )</span><br><span class="line">            <span class="comment"># If the method is to do with user interaction,</span></span><br><span class="line">            <span class="comment">#  don&#x27;t include it.</span></span><br><span class="line">            <span class="keyword">if</span> is_user_interaction == <span class="literal">True</span>:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">if</span> xref_from_elem[<span class="number">1</span>] <span class="keyword">not</span> <span class="keyword">in</span> calling_methods:</span><br><span class="line">            calling_methods.append(xref_from_elem[<span class="number">1</span>])</span><br><span class="line"><span class="keyword">return</span> calling_methods</span><br></pre></td></tr></table></figure>
+<p>然后同时搜索trace_from要搜索的类的子类中搜索</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Include subclasses.</span></span><br><span class="line">all_subclasses = []</span><br><span class="line">all_subclasses.extend(</span><br><span class="line">    self.inst_analysis_utils.fn_find_subclasses(class_part)</span><br><span class="line">)</span><br><span class="line"><span class="keyword">for</span> subclass <span class="keyword">in</span> all_subclasses:</span><br><span class="line">    starting_points.extend(</span><br><span class="line">        self.inst_analysis_utils.fn_get_calls_to_method(</span><br><span class="line">            subclass,</span><br><span class="line">            method_part,</span><br><span class="line">            desc_part</span><br><span class="line">        )</span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+<p>然后还有一些不是直接调用的方法，例如OnCreate</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># We want to also add the original method to the search as it might not be directly called, for example OnCreate.</span></span><br><span class="line"><span class="keyword">if</span> desc_part != <span class="string">&#x27;.&#x27;</span>:</span><br><span class="line">    desc_part = re.escape(desc_part)</span><br><span class="line">class_part = re.escape(class_part)</span><br><span class="line">method_part = re.escape(method_part)</span><br><span class="line"></span><br><span class="line">mathcing_methods = self.androguard_dx.find_methods(</span><br><span class="line">    class_part,</span><br><span class="line">    method_part,</span><br><span class="line">    desc_part)</span><br><span class="line"><span class="keyword">for</span> method <span class="keyword">in</span> mathcing_methods:</span><br><span class="line">    starting_points.append(method.get_method())</span><br></pre></td></tr></table></figure></li>
+<li><p>fn_analyse_trace_point进行具体的分</p>
+</li>
+<li><p>fn_trace_reverse搜索starting point在xref_from里面的是否在trace_to里面，如果不是继续往上递归搜索xref_from的结果</p>
+</li>
+<li><p>如果匹配到链路，那么这次搜索成功，一路向上返回。</p>
+</li>
+<li><p>最终可以生成一个图的结果来看。可以看到调用链路</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wrap:()V:Lcom&#x2F;example&#x2F;webviewdemo&#x2F;MainActivity;  -&gt; loadUrl:(Ljava&#x2F;lang&#x2F;String;)V:Landroid&#x2F;webkit&#x2F;WebView;</span><br></pre></td></tr></table></figure>
+<p><img src="https://image.bdwms.com/FgjHuprp0C-e1qqnb7_6r1Dl0WRg"></p>
+<p><img src="https://image.bdwms.com/FiOMs1TSnb4TbycXBC6xHliP1X5-"></p>
+</li>
+</ol>
+<p>其中最为核心的就是利用Androguard搜索xref_from，然后看调用这个函数的是否有匹配链路的，没有就继续往上搜索，同时要注意处理一些特殊情况例如子类，特殊函数OnCreate等，就这样利用交叉引用搜索出整个的调用链路。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fn_get_methods</span>(<span class="params">self, class_part, method_part, desc_part</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;Gets all methods that satisfy a certain signature.</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    :param class_part: name of the method class as string</span></span><br><span class="line"><span class="string">    :param method_part: name of the method as string</span></span><br><span class="line"><span class="string">    :param desc_part: descriptor as string</span></span><br><span class="line"><span class="string">    :returns: list of Androguard MethodAnalysis objects</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    method_objs = []</span><br><span class="line">    <span class="keyword">if</span> desc_part != <span class="string">&#x27;.&#x27;</span>:</span><br><span class="line">        desc_part = re.escape(desc_part)</span><br><span class="line">    class_part = re.escape(class_part)</span><br><span class="line">    method_part = re.escape(method_part)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> method <span class="keyword">in</span> self.androguard_dx.find_methods(</span><br><span class="line">        class_part,</span><br><span class="line">        method_part,</span><br><span class="line">        desc_part</span><br><span class="line">    ):</span><br><span class="line">        method_objs.append(method)</span><br><span class="line">    <span class="keyword">return</span> method_objs</span><br></pre></td></tr></table></figure>
+<p>Androguard的源码分析暂时不在本文中展开。交叉引用的概念可以参考：<a target="_blank" rel="noopener" href="https://androguard.readthedocs.io/en/latest/intro/xrefs.html">https://androguard.readthedocs.io/en/latest/intro/xrefs.html</a></p>
+<p>经过上述复杂的调用链路，完成了一次静态污点分析的调用链路排查，通过这样的思想和方法我们就可以完成对相关隐私API链路的调用，梳理出来大部分调用链路，但是这样子的静态分析必然是无法覆盖全面的调用链路的，例如动态调用代码，反射等一些比较特殊的处理都是很难利用静态扫码完整回溯出来的，同时缺乏运行时的信息也是很难完整还原真实的APP隐私行为。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>静态扫描作为隐私治理的一方面手段，以较低的成本对APP进行了总体的概览，同时借鉴了漏洞分析中的污点分析思想，应用在隐私治理中，这也是非常有效和常用的，值得我们去更多挖掘类似的方法，之后会对iOS的静态扫描做同样的分析。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://ch3nye.top/%E6%B1%A1%E7%82%B9%E5%88%86%E6%9E%90%E6%8A%80%E6%9C%AF%E7%AC%94%E8%AE%B0/">污点分析笔记</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.npc.gov.cn/npc/c30834/202108/a8c4e3672c74491a80b53a172bb753fe.shtml">个人信息保护法</a></li>
+<li><a target="_blank" rel="noopener" href="https://androguard.readthedocs.io/en/latest/">Androguard手册</a> </li>
+</ul>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/categories/">Category</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9A%90%E7%A7%81%E5%90%88%E8%A7%84"><span class="toc-number">1.</span> <span class="toc-text">隐私合规</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B1%A1%E7%82%B9%E5%88%86%E6%9E%90"><span class="toc-number">2.</span> <span class="toc-text">污点分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Jandroid%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">Jandroid源码分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">5.</span> <span class="toc-text">参考</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/privacy-with-taint-analysis/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/privacy-with-taint-analysis/&text=隐私合规——浅谈污点分析的应用"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/privacy-with-taint-analysis/&title=隐私合规——浅谈污点分析的应用"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/privacy-with-taint-analysis/&is_video=false&description=隐私合规——浅谈污点分析的应用"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=隐私合规——浅谈污点分析的应用&body=Check out this article: http://example.com/privacy-with-taint-analysis/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/privacy-with-taint-analysis/&title=隐私合规——浅谈污点分析的应用"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/privacy-with-taint-analysis/&title=隐私合规——浅谈污点分析的应用"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/privacy-with-taint-analysis/&title=隐私合规——浅谈污点分析的应用"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/privacy-with-taint-analysis/&title=隐私合规——浅谈污点分析的应用"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/privacy-with-taint-analysis/&name=隐私合规——浅谈污点分析的应用&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/privacy-with-taint-analysis/&t=隐私合规——浅谈污点分析的应用"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2018-2022
+    <a target="_blank" rel="noopener" href="https://bdwms.site">bdwms<a>
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+          <li><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/">皖ICP备18025933号-3</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+ 
+  <link
+    rel="preload"
+    href="/lib/font-awesome/css/all.min.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript
+    ><link
+      rel="stylesheet"
+      href="/lib/font-awesome/css/all.min.css"
+  /></noscript>
+
+
+    <!-- jquery -->
+ 
+  
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+
+
+
+<!-- clipboard -->
+
+   
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-188330730-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-188330730-1');
+    </script>
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'birdmanwings/birdmanwings.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = 'Comment';
+      var utterances_theme = 'github-dark';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>
