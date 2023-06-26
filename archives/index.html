@@ -35,6 +35,21 @@
     
     <!-- title -->
     <title>Writing</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-188330730-1"></script>
+  <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-188330730-1');
+  </script>
+
+
+    <!-- Umami Analytics -->
+
+
     <!-- styles -->
     
 <link rel="stylesheet" href="/css/style.css">
@@ -50,23 +65,23 @@
 
 <body class="max-width mx-auto px3 ltr">
     
-    <div class="content index py4">
+    <div class="content index py4 ">
         
           <header id="header">
-  <a href="/">
+  <a class="u-url u-uid" href="/">
   
     
-      <div id="logo" style="background-image: url(/images/logo.png);"></div>
+      <img id="logo" alt class="u-logo" src="/images/logo.png" />
     
   
     <div id="title">
-      <h1>BDWMS</h1>
+      <h1 class="p-name">BDWMS</h1>
     </div>
   </a>
   <div id="nav">
     <ul>
       <li class="icon">
-        <a href="#" aria-label="Menu"><i class="fas fa-bars fa-2x"></i></a>
+        <a href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-2x"></i></a>
       </li>
       <!--
      --><li><a href="/">Home</a></li><!--
@@ -101,7 +116,7 @@
     <div class="meta">
       
         
-          <time datetime="2023-06-22T14:49:54.000Z" itemprop="datePublished">2023-06-22</time>
+          <time datetime="2023-06-22T14:49:54.000Z" class="dt-published" itemprop="datePublished">2023-06-22</time>
         
       
     </div>
@@ -125,7 +140,7 @@
     <div class="meta">
       
         
-          <time datetime="2023-04-20T15:15:38.000Z" itemprop="datePublished">2023-04-20</time>
+          <time datetime="2023-04-20T15:15:38.000Z" class="dt-published" itemprop="datePublished">2023-04-20</time>
         
       
     </div>
@@ -149,7 +164,7 @@
     <div class="meta">
       
         
-          <time datetime="2023-01-29T06:57:40.000Z" itemprop="datePublished">2023-01-29</time>
+          <time datetime="2023-01-29T06:57:40.000Z" class="dt-published" itemprop="datePublished">2023-01-29</time>
         
       
     </div>
@@ -175,7 +190,7 @@
     <div class="meta">
       
         
-          <time datetime="2022-12-30T12:12:41.000Z" itemprop="datePublished">2022-12-30</time>
+          <time datetime="2022-12-30T12:12:41.000Z" class="dt-published" itemprop="datePublished">2022-12-30</time>
         
       
     </div>
@@ -199,7 +214,7 @@
     <div class="meta">
       
         
-          <time datetime="2022-12-11T17:13:59.000Z" itemprop="datePublished">2022-12-12</time>
+          <time datetime="2022-12-11T17:13:59.000Z" class="dt-published" itemprop="datePublished">2022-12-12</time>
         
       
     </div>
@@ -223,7 +238,7 @@
     <div class="meta">
       
         
-          <time datetime="2022-04-03T02:20:21.000Z" itemprop="datePublished">2022-04-03</time>
+          <time datetime="2022-04-03T02:20:21.000Z" class="dt-published" itemprop="datePublished">2022-04-03</time>
         
       
     </div>
@@ -247,7 +262,7 @@
     <div class="meta">
       
         
-          <time datetime="2022-02-27T07:30:49.000Z" itemprop="datePublished">2022-02-27</time>
+          <time datetime="2022-02-27T07:30:49.000Z" class="dt-published" itemprop="datePublished">2022-02-27</time>
         
       
     </div>
@@ -273,7 +288,7 @@
     <div class="meta">
       
         
-          <time datetime="2021-10-08T12:28:16.000Z" itemprop="datePublished">2021-10-08</time>
+          <time datetime="2021-10-08T12:28:16.000Z" class="dt-published" itemprop="datePublished">2021-10-08</time>
         
       
     </div>
@@ -297,7 +312,7 @@
     <div class="meta">
       
         
-          <time datetime="2021-09-30T13:12:54.000Z" itemprop="datePublished">2021-09-30</time>
+          <time datetime="2021-09-30T13:12:54.000Z" class="dt-published" itemprop="datePublished">2021-09-30</time>
         
       
     </div>
@@ -321,7 +336,7 @@
     <div class="meta">
       
         
-          <time datetime="2021-08-10T17:30:29.000Z" itemprop="datePublished">2021-08-11</time>
+          <time datetime="2021-08-10T17:30:29.000Z" class="dt-published" itemprop="datePublished">2021-08-11</time>
         
       
     </div>
@@ -342,7 +357,7 @@
         
         <span class="page-number">Page 1 of 2</span>
         
-            <a href="/archives/page/2/"><i class="fas fa-angle-right"></i>
+            <a href="/archives/page/2/"><i class="fa-solid fa-angle-right"></i>
             </a>
         
     </div>
@@ -387,7 +402,7 @@
 
 
     <!-- jquery -->
- 
+
   
 <script src="/lib/jquery/jquery.min.js"></script>
 
@@ -402,21 +417,9 @@
 
 <!-- search -->
 
-<!-- Google Analytics -->
-
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-188330730-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'UA-188330730-1');
-    </script>
-
 <!-- Baidu Analytics -->
 
 <!-- Cloudflare Analytics -->
-
-<!-- Umami Analytics -->
 
 <!-- Disqus Comments -->
 

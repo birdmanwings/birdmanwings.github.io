@@ -20,7 +20,7 @@
 <meta property="og:image" content="https://image.bdwms.com/FvHsGjuxiuWLnIXz04eK4pLkoOm4">
 <meta property="og:image" content="https://image.bdwms.com/FgkGgBr3d1jnp_3ycicaEH7BkSCB">
 <meta property="article:published_time" content="2021-01-10T03:39:03.000Z">
-<meta property="article:modified_time" content="2023-06-25T06:32:22.398Z">
+<meta property="article:modified_time" content="2023-06-26T08:22:54.411Z">
 <meta property="article:author" content="bdwms">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://image.bdwms.com/FvB5KJRP8BMLJtatrdl8yHLHZFKZ">
@@ -44,6 +44,21 @@
     
     <!-- title -->
     <title>从TLS看安全协议设计（上）</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-188330730-1"></script>
+  <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-188330730-1');
+  </script>
+
+
+    <!-- Umami Analytics -->
+
+
     <!-- styles -->
     
 <link rel="stylesheet" href="/css/style.css">
@@ -60,9 +75,9 @@
 <body class="max-width mx-auto px3 ltr">
     
       <div id="header-post">
-  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
-  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
-  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
   <span id="menu">
     <span id="nav">
       <ul>
@@ -83,13 +98,13 @@
     <span id="actions">
       <ul>
         
-        <li><a class="icon" aria-label="Previous post" href="/TLS-design-part-two/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Previous post" href="/TLS-design-part-two/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
         
         
-        <li><a class="icon" aria-label="Next post" href="/Hello-2021/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Next post" href="/Hello-2021/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
         
-        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
-        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
       </ul>
       <span id="i-prev" class="info" style="display:none;">Previous post</span>
       <span id="i-next" class="info" style="display:none;">Next post</span>
@@ -103,7 +118,7 @@
   <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/TLS-design-part-one/&text=从TLS看安全协议设计（上）"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
   <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/TLS-design-part-one/&title=从TLS看安全协议设计（上）"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
   <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/TLS-design-part-one/&is_video=false&description=从TLS看安全协议设计（上）"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=从TLS看安全协议设计（上）&body=Check out this article: http://example.com/TLS-design-part-one/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=从TLS看安全协议设计（上）&body=Check out this article: http://example.com/TLS-design-part-one/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
   <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/TLS-design-part-one/&title=从TLS看安全协议设计（上）"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
   <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/TLS-design-part-one/&title=从TLS看安全协议设计（上）"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
   <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/TLS-design-part-one/&title=从TLS看安全协议设计（上）"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
@@ -113,32 +128,35 @@
 </ul>
 
     </div>
-    <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1%E7%90%86%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">设计理念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81TLS"><span class="toc-number">1.1.</span> <span class="toc-text">为什么需要TLS?</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86"><span class="toc-number">2.</span> <span class="toc-text">预备知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%86%E7%A0%81%E5%AD%A6%E5%9F%BA%E6%9C%AC%E5%B7%A5%E5%85%B7"><span class="toc-number">2.1.</span> <span class="toc-text">密码学基本工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RSA-ECC-DH"><span class="toc-number">2.2.</span> <span class="toc-text">RSA ECC DH</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E5%90%91%E5%AE%89%E5%85%A8"><span class="toc-number">2.3.</span> <span class="toc-text">前向安全</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%8F%E8%AE%AE%E6%9E%B6%E6%9E%84"><span class="toc-number">3.</span> <span class="toc-text">协议架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A8%E6%BC%94%E6%80%9D%E8%B7%AF"><span class="toc-number">4.</span> <span class="toc-text">推演思路</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%A1%E6%89%8B%E5%B1%82"><span class="toc-number">4.1.</span> <span class="toc-text">握手层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%B0%E5%BD%95%E5%B1%82"><span class="toc-number">4.2.</span> <span class="toc-text">记录层</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="toc-number">5.</span> <span class="toc-text">实现细节</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%A1%E6%89%8B%E5%B1%82%E5%86%B7%E5%90%AF%E5%8A%A8"><span class="toc-number">5.1.</span> <span class="toc-text">握手层冷启动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%A1%E6%89%8B%E5%B1%82%E7%83%AD%E5%90%AF%E5%8A%A8"><span class="toc-number">5.2.</span> <span class="toc-text">握手层热启动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%B0%E5%BD%95%E5%B1%82-1"><span class="toc-number">5.3.</span> <span class="toc-text">记录层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%86%E9%92%A5%E6%B4%BE%E7%94%9F%E5%87%BD%E6%95%B0%E4%B8%8E%E5%AF%86%E9%92%A5%E5%8F%98%E5%8C%96"><span class="toc-number">5.4.</span> <span class="toc-text">密钥派生函数与密钥变化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9E%E9%A1%BE%E4%B8%8E%E5%B1%95%E6%9C%9B"><span class="toc-number">6.</span> <span class="toc-text">回顾与展望</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">7.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">8.</span> <span class="toc-text">参考</span></a></li></ol>
-    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1%E7%90%86%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">设计理念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81TLS"><span class="toc-number">1.1.</span> <span class="toc-text">为什么需要TLS?</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86"><span class="toc-number">2.</span> <span class="toc-text">预备知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%86%E7%A0%81%E5%AD%A6%E5%9F%BA%E6%9C%AC%E5%B7%A5%E5%85%B7"><span class="toc-number">2.1.</span> <span class="toc-text">密码学基本工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RSA-ECC-DH"><span class="toc-number">2.2.</span> <span class="toc-text">RSA ECC DH</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E5%90%91%E5%AE%89%E5%85%A8"><span class="toc-number">2.3.</span> <span class="toc-text">前向安全</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%8F%E8%AE%AE%E6%9E%B6%E6%9E%84"><span class="toc-number">3.</span> <span class="toc-text">协议架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A8%E6%BC%94%E6%80%9D%E8%B7%AF"><span class="toc-number">4.</span> <span class="toc-text">推演思路</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%A1%E6%89%8B%E5%B1%82"><span class="toc-number">4.1.</span> <span class="toc-text">握手层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%B0%E5%BD%95%E5%B1%82"><span class="toc-number">4.2.</span> <span class="toc-text">记录层</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="toc-number">5.</span> <span class="toc-text">实现细节</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%A1%E6%89%8B%E5%B1%82%E5%86%B7%E5%90%AF%E5%8A%A8"><span class="toc-number">5.1.</span> <span class="toc-text">握手层冷启动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%A1%E6%89%8B%E5%B1%82%E7%83%AD%E5%90%AF%E5%8A%A8"><span class="toc-number">5.2.</span> <span class="toc-text">握手层热启动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%B0%E5%BD%95%E5%B1%82-1"><span class="toc-number">5.3.</span> <span class="toc-text">记录层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%86%E9%92%A5%E6%B4%BE%E7%94%9F%E5%87%BD%E6%95%B0%E4%B8%8E%E5%AF%86%E9%92%A5%E5%8F%98%E5%8C%96"><span class="toc-number">5.4.</span> <span class="toc-text">密钥派生函数与密钥变化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9E%E9%A1%BE%E4%B8%8E%E5%B1%95%E6%9C%9B"><span class="toc-number">6.</span> <span class="toc-text">回顾与展望</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">7.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">8.</span> <span class="toc-text">参考</span></a></li></ol>
+      </div>
+    
   </span>
 </div>
 
     
-    <div class="content index py4">
+    <div class="content index py4 ">
         
-        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
   <header>
     
-    <h1 class="posttitle" itemprop="name headline">
+    <h1 class="posttitle p-name" itemprop="name headline">
         从TLS看安全协议设计（上）
     </h1>
 
 
 
     <div class="meta">
-      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
-        <span itemprop="name">bdwms</span>
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">bdwms</span>
       </span>
       
     <div class="postdate">
       
-        <time datetime="2021-01-10T03:39:03.000Z" itemprop="datePublished">2021-01-10</time>
+        <time datetime="2021-01-10T03:39:03.000Z" class="dt-published" itemprop="datePublished">2021-01-10</time>
         
       
     </div>
@@ -146,7 +164,7 @@
 
       
     <div class="article-category">
-        <i class="fas fa-archive"></i>
+        <i class="fa-solid fa-archive"></i>
         <a class="category-link" href="/categories/Network/">Network</a>
     </div>
 
@@ -157,7 +175,7 @@
   </header>
   
 
-  <div class="content" itemprop="articleBody">
+  <div class="content e-content" itemprop="articleBody">
     <p>在开始正文前，我想先谈谈为什么要写这篇文章，为什么要对TLS协议进行分析？</p>
 <p>打开网站时我们经常能看到左上角的小绿锁，而TLS正是隐藏在后面的原由。对于大部分程序员，多多少少都可以聊一聊TLS的几分样貌，但是能真正的从其整体发散到细节，从理念落地到实践，以更高的角度去理解TLS是很少的。因此这里想要从我个人的角度，去理清TLS，解读这个将密码科学和软件工程良好结合的优秀设计，也希望能够给读者有所帮助。</p>
 <h2 id="设计理念"><a href="#设计理念" class="headerlink" title="设计理念"></a>设计理念</h2><h3 id="为什么需要TLS"><a href="#为什么需要TLS" class="headerlink" title="为什么需要TLS?"></a>为什么需要TLS?</h3><p>在不存在SSL/TLS的互联网中，消息通过例如HTTP明文传递，作为一个攻击者可以截获任意的包，那么他就可以获取报文中的信息，并对报文进行修改，伪装成对端进行窃听或者控制传输。</p>
@@ -323,23 +341,26 @@
 
     <div id="nav-footer" style="display: none">
       <ul>
-         
+        
           <li><a href="/">Home</a></li>
-         
+        
           <li><a href="/archives/">Writing</a></li>
-         
+        
           <li><a href="/categories/">Category</a></li>
-         
+        
           <li><a href="/about/">About</a></li>
-         
+        
           <li><a href="/search/">Search</a></li>
         
       </ul>
     </div>
 
-    <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1%E7%90%86%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">设计理念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81TLS"><span class="toc-number">1.1.</span> <span class="toc-text">为什么需要TLS?</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86"><span class="toc-number">2.</span> <span class="toc-text">预备知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%86%E7%A0%81%E5%AD%A6%E5%9F%BA%E6%9C%AC%E5%B7%A5%E5%85%B7"><span class="toc-number">2.1.</span> <span class="toc-text">密码学基本工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RSA-ECC-DH"><span class="toc-number">2.2.</span> <span class="toc-text">RSA ECC DH</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E5%90%91%E5%AE%89%E5%85%A8"><span class="toc-number">2.3.</span> <span class="toc-text">前向安全</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%8F%E8%AE%AE%E6%9E%B6%E6%9E%84"><span class="toc-number">3.</span> <span class="toc-text">协议架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A8%E6%BC%94%E6%80%9D%E8%B7%AF"><span class="toc-number">4.</span> <span class="toc-text">推演思路</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%A1%E6%89%8B%E5%B1%82"><span class="toc-number">4.1.</span> <span class="toc-text">握手层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%B0%E5%BD%95%E5%B1%82"><span class="toc-number">4.2.</span> <span class="toc-text">记录层</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="toc-number">5.</span> <span class="toc-text">实现细节</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%A1%E6%89%8B%E5%B1%82%E5%86%B7%E5%90%AF%E5%8A%A8"><span class="toc-number">5.1.</span> <span class="toc-text">握手层冷启动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%A1%E6%89%8B%E5%B1%82%E7%83%AD%E5%90%AF%E5%8A%A8"><span class="toc-number">5.2.</span> <span class="toc-text">握手层热启动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%B0%E5%BD%95%E5%B1%82-1"><span class="toc-number">5.3.</span> <span class="toc-text">记录层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%86%E9%92%A5%E6%B4%BE%E7%94%9F%E5%87%BD%E6%95%B0%E4%B8%8E%E5%AF%86%E9%92%A5%E5%8F%98%E5%8C%96"><span class="toc-number">5.4.</span> <span class="toc-text">密钥派生函数与密钥变化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9E%E9%A1%BE%E4%B8%8E%E5%B1%95%E6%9C%9B"><span class="toc-number">6.</span> <span class="toc-text">回顾与展望</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">7.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">8.</span> <span class="toc-text">参考</span></a></li></ol>
-    </div>
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1%E7%90%86%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">设计理念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81TLS"><span class="toc-number">1.1.</span> <span class="toc-text">为什么需要TLS?</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86"><span class="toc-number">2.</span> <span class="toc-text">预备知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%86%E7%A0%81%E5%AD%A6%E5%9F%BA%E6%9C%AC%E5%B7%A5%E5%85%B7"><span class="toc-number">2.1.</span> <span class="toc-text">密码学基本工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RSA-ECC-DH"><span class="toc-number">2.2.</span> <span class="toc-text">RSA ECC DH</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E5%90%91%E5%AE%89%E5%85%A8"><span class="toc-number">2.3.</span> <span class="toc-text">前向安全</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%8F%E8%AE%AE%E6%9E%B6%E6%9E%84"><span class="toc-number">3.</span> <span class="toc-text">协议架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A8%E6%BC%94%E6%80%9D%E8%B7%AF"><span class="toc-number">4.</span> <span class="toc-text">推演思路</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%A1%E6%89%8B%E5%B1%82"><span class="toc-number">4.1.</span> <span class="toc-text">握手层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%B0%E5%BD%95%E5%B1%82"><span class="toc-number">4.2.</span> <span class="toc-text">记录层</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="toc-number">5.</span> <span class="toc-text">实现细节</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%A1%E6%89%8B%E5%B1%82%E5%86%B7%E5%90%AF%E5%8A%A8"><span class="toc-number">5.1.</span> <span class="toc-text">握手层冷启动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%A1%E6%89%8B%E5%B1%82%E7%83%AD%E5%90%AF%E5%8A%A8"><span class="toc-number">5.2.</span> <span class="toc-text">握手层热启动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%B0%E5%BD%95%E5%B1%82-1"><span class="toc-number">5.3.</span> <span class="toc-text">记录层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%86%E9%92%A5%E6%B4%BE%E7%94%9F%E5%87%BD%E6%95%B0%E4%B8%8E%E5%AF%86%E9%92%A5%E5%8F%98%E5%8C%96"><span class="toc-number">5.4.</span> <span class="toc-text">密钥派生函数与密钥变化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9E%E9%A1%BE%E4%B8%8E%E5%B1%95%E6%9C%9B"><span class="toc-number">6.</span> <span class="toc-text">回顾与展望</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">7.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">8.</span> <span class="toc-text">参考</span></a></li></ol>
+      </div>
+    
 
     <div id="share-footer" style="display: none">
       <ul>
@@ -347,7 +368,7 @@
   <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/TLS-design-part-one/&text=从TLS看安全协议设计（上）"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
   <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/TLS-design-part-one/&title=从TLS看安全协议设计（上）"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
   <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/TLS-design-part-one/&is_video=false&description=从TLS看安全协议设计（上）"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=从TLS看安全协议设计（上）&body=Check out this article: http://example.com/TLS-design-part-one/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=从TLS看安全协议设计（上）&body=Check out this article: http://example.com/TLS-design-part-one/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
   <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/TLS-design-part-one/&title=从TLS看安全协议设计（上）"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
   <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/TLS-design-part-one/&title=从TLS看安全协议设计（上）"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
   <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/TLS-design-part-one/&title=从TLS看安全协议设计（上）"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
@@ -359,10 +380,12 @@
     </div>
 
     <div id="actions-footer">
-        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
-        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
-        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
-        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
     </div>
 
   </div>
@@ -405,7 +428,7 @@
 
 
     <!-- jquery -->
- 
+
   
 <script src="/lib/jquery/jquery.min.js"></script>
 
@@ -415,7 +438,7 @@
 
 <!-- clipboard -->
 
-   
+  
     
 <script src="/lib/clipboard/clipboard.min.js"></script>
 
@@ -424,8 +447,8 @@
   $(function() {
     // copy-btn HTML
     var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
-    btn += '<i class="far fa-clone"></i>';
-    btn += '</span>'; 
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
     // mount it!
     $(".highlight table").before(btn);
     var clip = new ClipboardJS('.btn-copy', {
@@ -445,21 +468,9 @@
 
 <!-- search -->
 
-<!-- Google Analytics -->
-
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-188330730-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'UA-188330730-1');
-    </script>
-
 <!-- Baidu Analytics -->
 
 <!-- Cloudflare Analytics -->
-
-<!-- Umami Analytics -->
 
 <!-- Disqus Comments -->
 
