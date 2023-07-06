@@ -29,7 +29,7 @@
 <meta property="og:image" content="https://image.bdwms.com/FguqVlzdQnO4gZZoi5Mcc09j3X7l">
 <meta property="og:image" content="https://image.bdwms.com/FvTSBrq41uZsyEA6ykg3YSsy5P5A">
 <meta property="article:published_time" content="2021-01-20T14:37:22.000Z">
-<meta property="article:modified_time" content="2023-07-05T16:44:52.971Z">
+<meta property="article:modified_time" content="2023-07-06T15:58:23.820Z">
 <meta property="article:author" content="bdwms">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://image.bdwms.com/FuPdRD-5x6JDJ-twQbnhC0uNuFzn">
@@ -79,7 +79,7 @@
     
 	<!-- mathjax -->
 	
-<meta name="generator" content="Hexo 5.3.0"></head>
+<meta name="generator" content="Hexo 5.4.2"></head>
 
 <body class="max-width mx-auto px3 ltr">
     
@@ -213,7 +213,7 @@
 <ol>
 <li>服务端拥有私钥a，客户端拥有私钥b，第一次服务端发送公钥aG和参数G。</li>
 <li>客户端接受到后计算bG，发送自己的公钥bG至服务端。</li>
-<li>此时客户端拥有aG和b，服务端拥有bG和a，双方经过计算a(bG)=b(aG)=abG，得出相同的会话数据。</li>
+<li>此时客户端拥有aG和b，服务端拥有bG和a，双方经过计算a(bG)&#x3D;b(aG)&#x3D;abG，得出相同的会话数据。</li>
 </ol>
 <p>此时中间人只能截获aG，bG和G，无法求出abG，因为想要求出的话记必须通过aG和G（bG和G）计算出a（b），但是从上文的条件可以看出这是困难的，由此这就是DH类算法的原理。</p>
 <p><img src="https://image.bdwms.com/FpcwsX8mQoxRoZVp1cPJ5bMnpTFv"></p>
@@ -298,12 +298,15 @@
 <p>然后Alice会生成一组临时密钥EKA，进行密钥计算</p>
 <p><img src="https://image.bdwms.com/FpFG1oXDRRgK4RsEdKjX8tTIzn8G"></p>
 <p>没有OPKB的时候：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">DH1 &#x3D; DH(IKA, SPKB)</span><br><span class="line">DH2 &#x3D; DH(EKA, IKB)</span><br><span class="line">DH3 &#x3D; DH(EKA, SPKB)</span><br><span class="line">SK &#x3D; KDF(DH1 || DH2 || DH3)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">DH1 = DH(IKA, SPKB)</span><br><span class="line">DH2 = DH(EKA, IKB)</span><br><span class="line">DH3 = DH(EKA, SPKB)</span><br><span class="line">SK = KDF(DH1 || DH2 || DH3)</span><br></pre></td></tr></table></figure>
+
 <p>有OPKB的时候，多了个DH4：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">DH4 &#x3D; DH(EKA, OPKB)</span><br><span class="line">SK &#x3D; KDF(DH1 || DH2 || DH3 || DH4)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">DH4 = DH(EKA, OPKB)</span><br><span class="line">SK = KDF(DH1 || DH2 || DH3 || DH4)</span><br></pre></td></tr></table></figure>
+
 <p>其中DH1和DH2提供相互认证，DH3和DH4提供前向安全，后面我会解释。</p>
 <p>之后Alice删除EKA的私钥和中间计算的DH值，并使用身份信息计算一个“associated data”即AD，例如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AD &#x3D; Encode(IKA) || Encode(IKB)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AD = Encode(IKA) || Encode(IKB)</span><br></pre></td></tr></table></figure>
+
 <p><img src="https://image.bdwms.com/FkpAO81vOvXytc1IBD3-_ligehZB"></p>
 <p>随后Alice发送初始化消息，包含：</p>
 <ul>
@@ -351,7 +354,7 @@
 <p><img src="https://image.bdwms.com/FqSh4YL63VL3QsoY5yjCWrfJVM9L"></p>
 <p>然后看下实际的交互情况，会从Root Chain导出Sending Chain和Receiving Chain，然后Sending Chain和Receiving Chain会生成每个消息单独的message key。</p>
 <p><img src="https://image.bdwms.com/FguqVlzdQnO4gZZoi5Mcc09j3X7l"></p>
-<h3 id="失序处理"><a href="#失序处理" class="headerlink" title="失序处理"></a>失序处理</h3><p>当消息乱序发送时，会在消息头中维护消息序列和上一个链的长度，然后失序到达时保存未到的消息的对应的message key，例如下面B4到了B2和B3没到，头信息为N=1,Pn=2，所以可以推算出哪些没到，并保存这些消息的对应密钥。</p>
+<h3 id="失序处理"><a href="#失序处理" class="headerlink" title="失序处理"></a>失序处理</h3><p>当消息乱序发送时，会在消息头中维护消息序列和上一个链的长度，然后失序到达时保存未到的消息的对应的message key，例如下面B4到了B2和B3没到，头信息为N&#x3D;1,Pn&#x3D;2，所以可以推算出哪些没到，并保存这些消息的对应密钥。</p>
 <p><img src="https://image.bdwms.com/FvTSBrq41uZsyEA6ykg3YSsy5P5A"></p>
 <h3 id="X3DH结合双棘轮"><a href="#X3DH结合双棘轮" class="headerlink" title="X3DH结合双棘轮"></a>X3DH结合双棘轮</h3><p>X3DH商量的SK作为Root key，协商出的AD作为棘轮加密时用的AD，Bob的Prekey作为Bob初始棘轮公钥。X3DH的主要任务就是为了生成这个root chain的key。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>通过以上的描述我们大致了解了Signal协议是如何做到端到端加密的，真正意义上解决了第三者插入会话的问题，并且提供了可否认性，加强了前后向安全与对抗密钥泄漏。但是对于还有很多问题没有回答，比如如何做到多设备管理（Sesame），如何进行群组会话支持端到端加密（参考WhatsApp白皮书），如何做到多服务器负载均衡下的通信。同时我们要知道，就算在协议设计上没有问题，但是可能因为攻击者直接攻破接管了客户端等等类似的问题，影响到端到端通信之间的安全，所以要铭记一点：没有绝对的安全，我们只能尽量接近安全。</p>

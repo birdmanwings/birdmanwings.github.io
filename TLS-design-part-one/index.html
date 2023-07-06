@@ -20,7 +20,7 @@
 <meta property="og:image" content="https://image.bdwms.com/FvHsGjuxiuWLnIXz04eK4pLkoOm4">
 <meta property="og:image" content="https://image.bdwms.com/FgkGgBr3d1jnp_3ycicaEH7BkSCB">
 <meta property="article:published_time" content="2021-01-10T03:39:03.000Z">
-<meta property="article:modified_time" content="2023-07-05T16:44:52.971Z">
+<meta property="article:modified_time" content="2023-07-06T15:58:23.820Z">
 <meta property="article:author" content="bdwms">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://image.bdwms.com/FvB5KJRP8BMLJtatrdl8yHLHZFKZ">
@@ -70,7 +70,7 @@
     
 	<!-- mathjax -->
 	
-<meta name="generator" content="Hexo 5.3.0"></head>
+<meta name="generator" content="Hexo 5.4.2"></head>
 
 <body class="max-width mx-auto px3 ltr">
     
@@ -178,9 +178,9 @@
   <div class="content e-content" itemprop="articleBody">
     <p>在开始正文前，我想先谈谈为什么要写这篇文章，为什么要对TLS协议进行分析？</p>
 <p>打开网站时我们经常能看到左上角的小绿锁，而TLS正是隐藏在后面的原由。对于大部分程序员，多多少少都可以聊一聊TLS的几分样貌，但是能真正的从其整体发散到细节，从理念落地到实践，以更高的角度去理解TLS是很少的。因此这里想要从我个人的角度，去理清TLS，解读这个将密码科学和软件工程良好结合的优秀设计，也希望能够给读者有所帮助。</p>
-<h2 id="设计理念"><a href="#设计理念" class="headerlink" title="设计理念"></a>设计理念</h2><h3 id="为什么需要TLS"><a href="#为什么需要TLS" class="headerlink" title="为什么需要TLS?"></a>为什么需要TLS?</h3><p>在不存在SSL/TLS的互联网中，消息通过例如HTTP明文传递，作为一个攻击者可以截获任意的包，那么他就可以获取报文中的信息，并对报文进行修改，伪装成对端进行窃听或者控制传输。</p>
+<h2 id="设计理念"><a href="#设计理念" class="headerlink" title="设计理念"></a>设计理念</h2><h3 id="为什么需要TLS"><a href="#为什么需要TLS" class="headerlink" title="为什么需要TLS?"></a>为什么需要TLS?</h3><p>在不存在SSL&#x2F;TLS的互联网中，消息通过例如HTTP明文传递，作为一个攻击者可以截获任意的包，那么他就可以获取报文中的信息，并对报文进行修改，伪装成对端进行窃听或者控制传输。</p>
 <p>在上文的描述中，我们可以看出明文传输存在的最显著问题：数据没有加密，消息易被篡改，身份能被伪造。这也对应着信息安全中的<strong>机密性</strong>，<strong>完整性</strong>，<strong>身份认证</strong>。</p>
-<p>除了这三个最明显的问题，还有其他很多待解决的问题，例如如何确保用户不能抵赖之前发送的消息，即<strong>不可否认性</strong>；如何在设计时，降低所需的传输时间，提升<strong>性能</strong>；如何做到协议的<strong>通用性</strong>和<strong>可拓展性</strong>。这一系列的问题缺乏一个统一的解决方案，很多情况下仅是通过应用层的一些手段去不完善的处理，这些需求也就促成了SSL/TLS的诞生与发展。</p>
+<p>除了这三个最明显的问题，还有其他很多待解决的问题，例如如何确保用户不能抵赖之前发送的消息，即<strong>不可否认性</strong>；如何在设计时，降低所需的传输时间，提升<strong>性能</strong>；如何做到协议的<strong>通用性</strong>和<strong>可拓展性</strong>。这一系列的问题缺乏一个统一的解决方案，很多情况下仅是通过应用层的一些手段去不完善的处理，这些需求也就促成了SSL&#x2F;TLS的诞生与发展。</p>
 <p>围绕着这些需求，从90年代SSL1.0设计之初，一直走到了08年TLS1.2版本正式发布，整个协议才趋于成熟，又伴随着安全研究的升级对抗以及对性能提升的要求，1.3版本也在几年的商讨中于18年诞生。而这几年业界也是逐渐从1.2版本向1.3升级。当然因为历史遗留原因目前主流的还是1.2版本，因此我的分析也将从1.2版本开始，再迈向1.3，为读者浅析TLS的前世今生。</p>
 <p><img src="https://image.bdwms.com/FvB5KJRP8BMLJtatrdl8yHLHZFKZ"></p>
 <h2 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h2><p>在阅读这一部分时，可以不先完全理解其细节，在浏览后面章节必要时，再返回本章进行对照理解。</p>
@@ -200,8 +200,8 @@
 <li><p>RSA</p>
 <p>基于大整数进行质因数分解的困难，具体原理可以看阮一峰的<a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2013/06/rsa_algorithm_part_one.html">《RSA算法原理》</a>，这里说下使用方法：</p>
 <p>存在一对公私钥：公钥(E,N)，私钥(D,N)，明文加密和密文解密类似下列的运算</p>
-<p>密文 = 明文^E mod N   </p>
-<p>明文 = 密文^D mod N  </p>
+<p>密文 &#x3D; 明文^E mod N   </p>
+<p>明文 &#x3D; 密文^D mod N  </p>
 <p>使用的过程类似：</p>
 <p>服务端下发公钥给客户端，客户端利用公钥加密一段会话数据后返回给服务端，服务端利用自己的私钥进行解密。</p>
 <p><img src="https://image.bdwms.com/FgWFJLCGyoonFMeoZxHodhv6io3d"></p>
@@ -213,7 +213,7 @@
 <p><strong>已知x和G，求xG是简单的（椭圆曲线上的运算，不是简单的数乘）；反过来已知xG和G，求x是困难的。</strong></p>
 <p>所以一般我们把x作为私钥，xG（G^x）为公钥</p>
 <p>使用的过程类似：</p>
-<p>服务端拥有私钥a，客户端拥有私钥b，第一次服务端发送公钥aG和参数G，客户端接受到后计算bG，发送给服务端，此时客户端拥有aG和b，服务端拥有bG和a，双方经过计算a(bG)=b(aG)=abG，得出相同的会话数据，但此时中间人只能截获aG，bG和G，无法求出abG，因为想要求出的话记必须通过aG和G（bG和G）计算出a（b），但是从上文的条件可以看出这是困难的，由此这就是DH类的原理。</p>
+<p>服务端拥有私钥a，客户端拥有私钥b，第一次服务端发送公钥aG和参数G，客户端接受到后计算bG，发送给服务端，此时客户端拥有aG和b，服务端拥有bG和a，双方经过计算a(bG)&#x3D;b(aG)&#x3D;abG，得出相同的会话数据，但此时中间人只能截获aG，bG和G，无法求出abG，因为想要求出的话记必须通过aG和G（bG和G）计算出a（b），但是从上文的条件可以看出这是困难的，由此这就是DH类的原理。</p>
 <p><img src="https://image.bdwms.com/FpcwsX8mQoxRoZVp1cPJ5bMnpTFv"></p>
 </li>
 </ul>
@@ -243,6 +243,7 @@
 <h2 id="实现细节"><a href="#实现细节" class="headerlink" title="实现细节"></a>实现细节</h2><h3 id="握手层冷启动"><a href="#握手层冷启动" class="headerlink" title="握手层冷启动"></a>握手层冷启动</h3><p>通过上面的推演，我们大致了解了每一层的目的以及大致的步骤，这里我们来看一下具体的实现。</p>
 <p>对于第一次冷启动的过程：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Client                                               Server</span><br><span class="line"></span><br><span class="line">ClientHello                  --------&gt;</span><br><span class="line">                                                ServerHello</span><br><span class="line">                                               Certificate*</span><br><span class="line">                                         ServerKeyExchange*</span><br><span class="line">                                        CertificateRequest*</span><br><span class="line">                             &lt;--------      ServerHelloDone</span><br><span class="line">Certificate*</span><br><span class="line">ClientKeyExchange</span><br><span class="line">CertificateVerify*</span><br><span class="line">[ChangeCipherSpec]</span><br><span class="line">Finished                     --------&gt;</span><br><span class="line">                                         [ChangeCipherSpec]</span><br><span class="line">                             &lt;--------             Finished</span><br><span class="line">Application Data             &lt;-------&gt;     Application Data</span><br><span class="line">*表示可选发送</span><br><span class="line">[]表示独立消息，这里为了防阻塞单独通知密钥协议已切换，有冗余在<span class="number">1.3</span>中删除</span><br></pre></td></tr></table></figure>
+
 <ol>
 <li>客户端发送ClientHello携带自己支持的加密组件以及随机值，服务端收到后选择支持的加密组件并携带服务端随机值返回一个ServerHello消息。</li>
 <li>之后服务端发送Certifacate消息，包含证书信息，以及当Certificate信息不足时，发送ServerKeyExchange消息包含补充信息。</li>
@@ -258,13 +259,17 @@
 </ol>
 <h3 id="握手层热启动"><a href="#握手层热启动" class="headerlink" title="握手层热启动"></a>握手层热启动</h3><p>分为Session_id和Session_ticket两种。第一种使用Session_id，发送ClientHello时会客户端会携带会话唯一标示，服务端同意后发送ServerHello以及Finished，根据保存的主密钥Master_secrert等信息以及新的随机值重新计算会话密钥来进行应用数据加密。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Client                                                Server</span><br><span class="line"></span><br><span class="line">ClientHello                   --------&gt;</span><br><span class="line">                                                 ServerHello</span><br><span class="line">                                          [ChangeCipherSpec]</span><br><span class="line">                              &lt;--------             Finished</span><br><span class="line">[ChangeCipherSpec]</span><br><span class="line">Finished                      --------&gt;</span><br><span class="line">Application Data              &lt;-------&gt;     Application Data</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p>但是因为存在分布式Session同步以及存储性能的限制，一般选用下面的Session_ticket手段，这十分类似HTTP中的Cookie和Session机制。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">第一次：</span><br><span class="line">   ClientHello</span><br><span class="line">   (empty SessionTicket extension)--------&gt;</span><br><span class="line">                                                   ServerHello</span><br><span class="line">                                (empty SessionTicket extension)</span><br><span class="line">                                                  Certificate*</span><br><span class="line">                                            ServerKeyExchange*</span><br><span class="line">                                           CertificateRequest*</span><br><span class="line">                                &lt;--------      ServerHelloDone</span><br><span class="line">   Certificate*</span><br><span class="line">   ClientKeyExchange</span><br><span class="line">   CertificateVerify*</span><br><span class="line">   [ChangeCipherSpec]</span><br><span class="line">   Finished                     --------&gt;</span><br><span class="line">   											         NewSessionTicket</span><br><span class="line">                                            [ChangeCipherSpec]</span><br><span class="line">                                &lt;--------             Finished</span><br><span class="line">   Application Data             &lt;-------&gt;     Application Data</span><br><span class="line">第二次：</span><br><span class="line">   ClientHello</span><br><span class="line">   (SessionTicket extension)     --------&gt;</span><br><span class="line">                                                    ServerHello</span><br><span class="line">                                 (empty SessionTicket extension)</span><br><span class="line">                                               NewSessionTicket</span><br><span class="line">                                             [ChangeCipherSpec]</span><br><span class="line">                                 &lt;--------             Finished</span><br><span class="line">   [ChangeCipherSpec]</span><br><span class="line">   Finished                      --------&gt;</span><br><span class="line">   Application Data              &lt;-------&gt;     Application Data</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p>可以看到在第一次中服务端会发送一个NewSessionTicket消息，将会话信息加密并MAC在其中，客户端在第二次中携带ticket，服务端成功解密并验证完整性后，如果同意就会直接省略密钥协商的过程，从而节省了传输时间。</p>
 <h3 id="记录层-1"><a href="#记录层-1" class="headerlink" title="记录层"></a>记录层</h3><p>从握手层得到数据如下：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    ConnectionEnd          entity;</span><br><span class="line">    PRFAlgorithm           prf_algorithm;</span><br><span class="line">    BulkCipherAlgorithm    bulk_cipher_algorithm;</span><br><span class="line">    CipherType             cipher_type;</span><br><span class="line">    uint8                  enc_key_length;</span><br><span class="line">    uint8                  block_length;</span><br><span class="line">    uint8                  fixed_iv_length;</span><br><span class="line">    uint8                  record_iv_length;</span><br><span class="line">    MACAlgorithm           mac_algorithm;  <span class="comment">/*mac 算法*/</span></span><br><span class="line">    uint8                  mac_length;     <span class="comment">/*mac 值的长度*/</span></span><br><span class="line">    uint8                  mac_key_length; <span class="comment">/*mac 算法密钥的长度*/</span></span><br><span class="line">    CompressionMethod      compression_algorithm;</span><br><span class="line">    opaque                 master_secret[<span class="number">48</span>];</span><br><span class="line">    opaque                 client_random[<span class="number">32</span>];</span><br><span class="line">    opaque                 server_random[<span class="number">32</span>];</span><br><span class="line">&#125; SecurityParameters;</span><br></pre></td></tr></table></figure>
-<p>利用PRF密钥派生函数生成以下数据用来加密和MAC。同时因为根据密码学的研究，客户端写/服务端读，服务端写/客户端读，这两种流向是不能使用同一个会话密钥的，会产生安全问题，所以生成两组write key。</p>
+
+<p>利用PRF密钥派生函数生成以下数据用来加密和MAC。同时因为根据密码学的研究，客户端写&#x2F;服务端读，服务端写&#x2F;客户端读，这两种流向是不能使用同一个会话密钥的，会产生安全问题，所以生成两组write key。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">client write MAC key*</span><br><span class="line">server write MAC key*</span><br><span class="line">client write encryption key</span><br><span class="line">server write encryption key</span><br><span class="line">client write IV</span><br><span class="line">server write IV</span><br><span class="line">*表示可选，AEAD模式无需MAC</span><br></pre></td></tr></table></figure>
+
 <p>记录层的流程为数据分段，压缩（可选，因为存在安全问题一般禁用），加密和完整性保护，添加消息头。</p>
 <p>我们这里重点关注加密和完整性保护。在密码学中存在三种加密和MAC的组合方式。</p>
 <ul>
@@ -276,8 +281,10 @@
 <h3 id="密钥派生函数与密钥变化"><a href="#密钥派生函数与密钥变化" class="headerlink" title="密钥派生函数与密钥变化"></a>密钥派生函数与密钥变化</h3><p>以上就是1.2的基本流程，针对密钥这一块需要单独强调一下。</p>
 <p>我们先看下PRF函数，它通过输入的材料可以通过递归的Hash生成无限长的随机输出，我们可以截取任意长度作为我们的产出需求，看一下具体的表现：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> P_hash(secret, seed) = HMAC_hash(secret, A(<span class="number">1</span>) + seed) +</span><br><span class="line">                           HMAC_hash(secret, A(<span class="number">2</span>) + seed) +</span><br><span class="line">                           HMAC_hash(secret, A(<span class="number">3</span>) + seed) + ...</span><br><span class="line"></span><br><span class="line">其中：</span><br><span class="line">A(<span class="number">0</span>) = seed</span><br><span class="line">A(i) = HMAC_hash(secret, A(i<span class="number">-1</span>))</span><br></pre></td></tr></table></figure>
+
 <p>因此在TLS中的表现形式就为：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PRF(secret, label, seed) = P_&lt;hash&gt;(secret, label + seed)</span><br></pre></td></tr></table></figure>
+
 <p>我们有了这样一个派生密钥的工具后，我们在来看下具体的密钥变化。在整个过程中主要涉及三个密钥：</p>
 <p><code>Premaster_secret -&gt; Master_secret -&gt; Session_key</code></p>
 <p>其中Premaster_secret是在握手交换时完成的，采用不同的密钥协商算法会有不同变化，如下：</p>
@@ -288,8 +295,10 @@
 </ul>
 <p>之后使用Premaster_seceret通过PRF函数生成48字节的Master_secret</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">master_secret = PRF(pre_master_secret, <span class="string">&quot;master secret&quot;</span>,</span><br><span class="line">                            ClientHello.random + ServerHello.random)</span><br><span class="line">                            [<span class="number">0.</span><span class="number">.47</span>];</span><br></pre></td></tr></table></figure>
+
 <p>Master_secret才是真正传递给记录层的，之后记录层利用Master_secret生成Session_key，然后切分为对称密钥，IV，MAC密钥来处理真正的应用数据。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">key_block = PRF(SecurityParameters.master_secret,</span><br><span class="line">                <span class="string">&quot;key expansion&quot;</span>,</span><br><span class="line">                SecurityParameters.server_random +</span><br><span class="line">                SecurityParameters.client_random);</span><br></pre></td></tr></table></figure>
+
 <p>这些变化的理由，我个人思考如下：</p>
 <ul>
 <li><p>为什么不直接使用Premaster_secret生成Session_key呢？</p>

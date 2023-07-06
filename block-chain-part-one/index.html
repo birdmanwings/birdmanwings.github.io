@@ -6,12 +6,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta name="description" content="The Times 03&#x2F;Jan&#x2F;2009 Chancellor on brink of second bailout for banks.  2008 年金融危机的海啸席卷全球，同年 11 月，化名中本聪的「神秘人」发表了论文《比特币：一种点对点式的电子现金系统》（Bitcoin: A Peer-to-Peer Electronic Cash System），并在次年挖出了第一个区块同时获得了">
+    <meta name="description" content="The Times 03&#x2F;Jan&#x2F;2009 Chancellor on brink of second bailout for banks.  2008 年金融危机的海啸席卷全球，同年 11 月，化名中本聪的「神秘人」发表了论文《比特币：一种点对点式的电子现金系统》（Bitcoin: A Peer-to-Peer Electronic Cash System），并在次年挖出了">
 <meta property="og:type" content="article">
 <meta property="og:title" content="浅谈区块链（一）—比特币">
 <meta property="og:url" content="http://example.com/block-chain-part-one/index.html">
 <meta property="og:site_name" content="BDWMS">
-<meta property="og:description" content="The Times 03&#x2F;Jan&#x2F;2009 Chancellor on brink of second bailout for banks.  2008 年金融危机的海啸席卷全球，同年 11 月，化名中本聪的「神秘人」发表了论文《比特币：一种点对点式的电子现金系统》（Bitcoin: A Peer-to-Peer Electronic Cash System），并在次年挖出了第一个区块同时获得了">
+<meta property="og:description" content="The Times 03&#x2F;Jan&#x2F;2009 Chancellor on brink of second bailout for banks.  2008 年金融危机的海啸席卷全球，同年 11 月，化名中本聪的「神秘人」发表了论文《比特币：一种点对点式的电子现金系统》（Bitcoin: A Peer-to-Peer Electronic Cash System），并在次年挖出了">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://image.bdwms.com/FkvIKMpdaWlh66sP6qExcUkFY170">
 <meta property="og:image" content="https://image.bdwms.com/Fs7Bj1mCjCKsZQWLeGfQONRTd6cg">
@@ -31,7 +31,7 @@
 <meta property="og:image" content="https://image.bdwms.com/Fhtvnego0ACGIeiaiMMUKDVxGcKI">
 <meta property="og:image" content="https://image.bdwms.com/FuVOHGAdupWDvuc1QS65YtgaXCRH">
 <meta property="article:published_time" content="2022-12-11T17:13:59.000Z">
-<meta property="article:modified_time" content="2023-07-05T16:44:52.971Z">
+<meta property="article:modified_time" content="2023-07-06T15:58:23.820Z">
 <meta property="article:author" content="bdwms">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://image.bdwms.com/FkvIKMpdaWlh66sP6qExcUkFY170">
@@ -81,7 +81,7 @@
     
 	<!-- mathjax -->
 	
-<meta name="generator" content="Hexo 5.3.0"></head>
+<meta name="generator" content="Hexo 5.4.2"></head>
 
 <body class="max-width mx-auto px3 ltr">
     
@@ -188,14 +188,14 @@
 
   <div class="content e-content" itemprop="articleBody">
     <blockquote>
-<p>The Times 03/Jan/2009 Chancellor on brink of second bailout for banks.</p>
+<p>The Times 03&#x2F;Jan&#x2F;2009 Chancellor on brink of second bailout for banks.</p>
 </blockquote>
 <p>2008 年金融危机的海啸席卷全球，同年 11 月，化名中本聪的「神秘人」发表了论文《比特币：一种点对点式的电子现金系统》（<em>Bitcoin: A Peer-to-Peer Electronic Cash System</em>），并在次年挖出了第一个区块同时获得了 50 比特币的奖励。这一创世区块中，中本聪写下了本文的开头「2009 年 1 月 3 日，财政大臣正处于第二轮银行紧急援助的边缘」，这也是当日《泰晤士报》的头版文章标题。</p>
 <p>一个新的时代就此诞生，而笔者将通过这篇文章从最基本的货币交易切入，围绕着比特币的重要特性，最终深入去中心化的思想。本文尽量从设计的角度出发，精简出区块链的核心理念，避免让读者过度纠结于实现细节或可以作为参考资料的前置知识。那么现在就让我们进入一个神奇的共识世界！</p>
 <h2 id="货币之困"><a href="#货币之困" class="headerlink" title="货币之困"></a>货币之困</h2><p>在深入比特币前，我们还是先讨论下纸币和传统电子货币（例如支付宝上的交易），笔者在这抛出几个问题供读者思考：</p>
 <ol>
 <li>如何相信交易的货币是真实的，而不是伪造的？</li>
-<li>如何确保一个人持有的纸币/数字货币，只能在一个交易中被使用，而不同时支付两笔交易呢（俗称「双花」问题）？</li>
+<li>如何确保一个人持有的纸币&#x2F;数字货币，只能在一个交易中被使用，而不同时支付两笔交易呢（俗称「双花」问题）？</li>
 <li>如何确保我持有的货币，不会被其他人冒认，被声明属于其他人呢？</li>
 </ol>
 <p>我们分类进行讨论</p>
@@ -262,8 +262,9 @@
 <li>不可伪造的签名；</li>
 </ol>
 <p>那么剩下的就是如何让大家达成一致的共识问题，避免双花等账本不一致的问题。</p>
-<h2 id="共识算法-POW"><a href="#共识算法-POW" class="headerlink" title="共识算法 POW"></a>共识算法 POW</h2><h3 id="工作量"><a href="#工作量" class="headerlink" title="工作量"></a>工作量</h3><p>POW 中文名为工作量证明算法，举个简单的例子：通过改变随机数 nonce，能够获得不同的 hash 值，首位为 0 的可能性时 1/16，所以大致得到一个首位为 0 的hash值需要算 16 次，前置 0 越多，越难算出来，比特币设置在 0 到 2 的 256 次方进行调整难度。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">hash256(&quot;Hello1&quot;) &#x3D; ffb7a43d629d363026b3309586233ab7ffc1054c4f56f43a92f0054870e7ddc9</span><br><span class="line">hash256(&quot;Hello2&quot;) &#x3D; e085bf19353eb3bd1021661a17cee97181b0b369d8e16c10ffb7b01287a77173</span><br><span class="line">hash256(&quot;Hello3&quot;) &#x3D; c5061965d37b8ed989529bf42eaf8a90c28fa00c3853c7eec586aa8b3922d404</span><br><span class="line">hash256(&quot;Hello4&quot;) &#x3D; 42c3104987afc18677179a4a1a984dbfc77e183b414bc6efb00c43b41b213537</span><br><span class="line">hash256(&quot;Hello5&quot;) &#x3D; 652dcd7b75d499bcdc61d0c4eda96012e3830557de01426da5b01e214b95cd7a</span><br><span class="line">hash256(&quot;Hello6&quot;) &#x3D; 4cc0fbe28abb820085f390d66880ece06297d74d13a6ddbbab3b664582a7a582</span><br><span class="line">hash256(&quot;Hello7&quot;) &#x3D; c3eef05b531b56e79ca38e5f46e6c04f21b0078212a1d8c3500aa38366d9786d</span><br><span class="line">hash256(&quot;Hello8&quot;) &#x3D; cf17d3f38036206cfce464cdcb44d9ccea3f005b7059cff1322c0dd8bf398830</span><br><span class="line">hash256(&quot;Hello9&quot;) &#x3D; 1f22981824c821d4e83246e71f207d0e49ad57755889874d43def42af693a077</span><br><span class="line">hash256(&quot;Hello10&quot;) &#x3D; 8a1e475d67cfbcea4bcf72d1eee65f15680515f65294c68b203725a9113fa6bf</span><br><span class="line">hash256(&quot;Hello11&quot;) &#x3D; 769987b3833f082e31476db0f645f60635fa774d2b92bf0bab00e0a539a2dede</span><br><span class="line">hash256(&quot;Hello12&quot;) &#x3D; c2acd1bb160b1d1e66d769a403e596b174ffab9a39aa7c44d1e670feaa67ab2d</span><br><span class="line">hash256(&quot;Hello13&quot;) &#x3D; dab8b9746f1c0bcf5750e0d878fc17940db446638a477070cf8dca8c3643618a</span><br><span class="line">hash256(&quot;Hello14&quot;) &#x3D; 51a575773fccbb5278929c08e788c1ce87e5f44ab356b8760776fd816357f6ff</span><br><span class="line">hash256(&quot;Hello15&quot;) &#x3D; 0442e1c38b810f5d3c022fc2820b1d7999149460b83dc680abdebc9c7bd65cae</span><br></pre></td></tr></table></figure>
+<h2 id="共识算法-POW"><a href="#共识算法-POW" class="headerlink" title="共识算法 POW"></a>共识算法 POW</h2><h3 id="工作量"><a href="#工作量" class="headerlink" title="工作量"></a>工作量</h3><p>POW 中文名为工作量证明算法，举个简单的例子：通过改变随机数 nonce，能够获得不同的 hash 值，首位为 0 的可能性时 1&#x2F;16，所以大致得到一个首位为 0 的hash值需要算 16 次，前置 0 越多，越难算出来，比特币设置在 0 到 2 的 256 次方进行调整难度。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">hash256(&quot;Hello1&quot;) = ffb7a43d629d363026b3309586233ab7ffc1054c4f56f43a92f0054870e7ddc9</span><br><span class="line">hash256(&quot;Hello2&quot;) = e085bf19353eb3bd1021661a17cee97181b0b369d8e16c10ffb7b01287a77173</span><br><span class="line">hash256(&quot;Hello3&quot;) = c5061965d37b8ed989529bf42eaf8a90c28fa00c3853c7eec586aa8b3922d404</span><br><span class="line">hash256(&quot;Hello4&quot;) = 42c3104987afc18677179a4a1a984dbfc77e183b414bc6efb00c43b41b213537</span><br><span class="line">hash256(&quot;Hello5&quot;) = 652dcd7b75d499bcdc61d0c4eda96012e3830557de01426da5b01e214b95cd7a</span><br><span class="line">hash256(&quot;Hello6&quot;) = 4cc0fbe28abb820085f390d66880ece06297d74d13a6ddbbab3b664582a7a582</span><br><span class="line">hash256(&quot;Hello7&quot;) = c3eef05b531b56e79ca38e5f46e6c04f21b0078212a1d8c3500aa38366d9786d</span><br><span class="line">hash256(&quot;Hello8&quot;) = cf17d3f38036206cfce464cdcb44d9ccea3f005b7059cff1322c0dd8bf398830</span><br><span class="line">hash256(&quot;Hello9&quot;) = 1f22981824c821d4e83246e71f207d0e49ad57755889874d43def42af693a077</span><br><span class="line">hash256(&quot;Hello10&quot;) = 8a1e475d67cfbcea4bcf72d1eee65f15680515f65294c68b203725a9113fa6bf</span><br><span class="line">hash256(&quot;Hello11&quot;) = 769987b3833f082e31476db0f645f60635fa774d2b92bf0bab00e0a539a2dede</span><br><span class="line">hash256(&quot;Hello12&quot;) = c2acd1bb160b1d1e66d769a403e596b174ffab9a39aa7c44d1e670feaa67ab2d</span><br><span class="line">hash256(&quot;Hello13&quot;) = dab8b9746f1c0bcf5750e0d878fc17940db446638a477070cf8dca8c3643618a</span><br><span class="line">hash256(&quot;Hello14&quot;) = 51a575773fccbb5278929c08e788c1ce87e5f44ab356b8760776fd816357f6ff</span><br><span class="line">hash256(&quot;Hello15&quot;) = 0442e1c38b810f5d3c022fc2820b1d7999149460b83dc680abdebc9c7bd65cae</span><br></pre></td></tr></table></figure>
+
 <h3 id="挖矿与收益"><a href="#挖矿与收益" class="headerlink" title="挖矿与收益"></a>挖矿与收益</h3><p>有了这么一个如何表示工作量的前提，那么我们可以描述一个熟知的名词——「挖矿」。比特币设置一个 target 目标，要求 hash 值小于 target 为挖矿成功，矿工通过改变随机值来暴力遍历找到合适的 nonce（这个过程根据全网算力调整，平均为10分钟算出一个）。</p>
 <p>挖出一个区块，可以奖励给矿工一定量的 btc（交易小费 + 基础奖励），这个奖励通过交易的方式 coinbase，交易输出地址是矿工自己的公钥地址，矿工将这笔交易写在第一个交易。奖励的定义如下：</p>
 <ul>
@@ -288,12 +289,10 @@
 <img src="https://image.bdwms.com/Fhtvnego0ACGIeiaiMMUKDVxGcKI" style="zoom:50%;" />
 </li>
 <li><p>分支合并：菱形被广播出去，倒三角的节点比较两个分叉的工作量，正三角-棱形分支工作量  &gt; 倒三角。替换主链为正三角-棱形分支，将倒三角认为为次链，除非倒三角后面的链接长度反超，才会被更新回去。但是因为挖矿计算的难度，当计算了6个区块后的深度，几乎是不可能被修改的，因为全网的总计算量不够来修改。</p>
-<img src="https://image.bdwms.com/FuVOHGAdupWDvuc1QS65YtgaXCRH" style="zoom:50%;" />
-
-</li>
+<img src="https://image.bdwms.com/FuVOHGAdupWDvuc1QS65YtgaXCRH" style="zoom:50%;" /></li>
 </ol>
 <p>同时计算出同一个区块可能每天出现，但是两次分叉的情况因为算力问题可能几周才会出现一次。因此比特币就是通过 <strong>降低了区块产生的频率（交易确认的频率），来减少分叉数据不一致的可能性；通过工作量的难度，避免了交易被否认</strong>。从分布式 CAP 原理来看就是牺牲了一定的一致性 C，保证了可用性 A 和分区容错性 P，有兴趣的读者可以深入了解一下 CAP 相关的知识。</p>
-<p>通过以上的一些列操作，这就保证了整个比特币系统的稳定统一性，避免了双花等交易共识不一致问题，只要符合拜占庭容错恶意节点不要超过 1/3，那么整个系统的账本总能保持一致安全的活性，支持系统内交易的正常进行。</p>
+<p>通过以上的一些列操作，这就保证了整个比特币系统的稳定统一性，避免了双花等交易共识不一致问题，只要符合拜占庭容错恶意节点不要超过 1&#x2F;3，那么整个系统的账本总能保持一致安全的活性，支持系统内交易的正常进行。</p>
 <h2 id="衍生安全问题"><a href="#衍生安全问题" class="headerlink" title="衍生安全问题"></a>衍生安全问题</h2><p>关于区块链的安全攻击问题不是本文的重点，暂时列举几个常见的例子，后续的文章中会进行更加详细的阐述：</p>
 <ol>
 <li>密钥泄漏：私钥被窃取。</li>
