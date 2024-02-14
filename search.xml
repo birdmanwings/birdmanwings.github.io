@@ -4,6 +4,19 @@
   
     
     <entry>
+      <title>围炉夜话零知识证明</title>
+      <link href="zero-knowledge-proof/"/>
+      <url>zero-knowledge-proof/</url>
+      
+        <content type="html"><![CDATA[<blockquote><p>零知识证明，from Zero to Hero</p></blockquote><p>新年期间，笔者又重新发起对零知识证明的冲锋，因为就像 V 神说的「this stuff is genuinely hard」。作为非数学科班的笔者，第一次学习零知识证明的时候烧掉了 CPU 也才理解了最多五成，但是放弃可不是笔者的风格，在新年十天中花费了大半的有效精力重新学习零知识证明，最终有了一点浅薄的理解，在这里记录分享下。</p><h2 id="从一个故事开始"><a href="#从一个故事开始" class="headerlink" title="从一个故事开始"></a>从一个故事开始</h2><h2 id="我们的目标是什么"><a href="#我们的目标是什么" class="headerlink" title="我们的目标是什么"></a>我们的目标是什么</h2><h2 id="我们拥有什么工具"><a href="#我们拥有什么工具" class="headerlink" title="我们拥有什么工具"></a>我们拥有什么工具</h2><h2 id="开始征途"><a href="#开始征途" class="headerlink" title="开始征途"></a>开始征途</h2><p>位数组证明：效率太慢</p><p>多项式：我们不可能找到共享连续段的两条不相等曲线，一个阶数为 <em>d</em> 的多项式至多有 <em>d</em> 个解，因而也就至多有<em>d</em> 个共同点 -&gt; 任何多项式在任意点的计算结果都可以看做是其唯一身份的表示</p><p>例如一个三阶的多项式，在 <em>x</em> 可以选择的所有值中，至多只有三个值能够使这些多项式相等，其它的值都是不相等的</p><p>证明：prover 声称他知道一些 verifier 也知道的多项式</p><p>verifier：挑选出随机值 x，并在本地计算多项式结果<br>verifier：将 x 给到 prover<br>prover：带入 x 计算出多项式结果并给到 verifier<br>verifier：比较两个结果，相同那么 prover 的声明可信度较高</p><p>因式分解：不知道多项式的前提下根据特定的性质来验证多项式，（比较弱的 verifier 不知道多项式的情况，prover 宣称他知道一个阶数为 3，其中两个根分别为 1 和 2 的多项式）</p><ul><li>verifier 挑选一个随机值 <em>r</em>, 计算 <em>t</em> &#x3D; <em>t(r)</em> (即，求值) ，然后将 <em>r</em> 发送给 prover。</li><li>prover 计算 <em>h</em>(<em>x</em>) &#x3D;<em>p</em>(<em>x</em>) &#x2F; <em>t</em>(<em>x</em>) ，并对 <em>p(r)</em> 和 <em>h(r)</em> 进行求值，将计算结果 <em>p</em>, <em>h</em> 提供给 verifier。</li><li>verifier 验证 <em>p&#x3D; t⋅h</em>，如果多项式相等，就意味着 <em>t(x)</em> 是 <em>p(x)</em> 的因式。</li></ul><p>暴露了 r 和 t(r)，需要</p><p>模糊计算隐藏，例如使用整数幂取模</p><h3 id="多项式限制"><a href="#多项式限制" class="headerlink" title="多项式限制"></a>多项式限制</h3><p>KEA 限制使用 verifier 提供的加密 s</p><p>零知识</p><p>prover 对提供的 p p’ h 再进行一次指数运算，避免 verifier 提取知识</p><h3 id="非交互式："><a href="#非交互式：" class="headerlink" title="非交互式："></a>非交互式：</h3><p>可以被重复使用，公开，可信，又不会被滥用的秘密参数</p><p>构造出秘密值 (<em>t</em>(<em>s</em>)<em>,α</em>) 构造之后保证它的安全性：对其加密，类似使用对 s 的加密取幂操作。</p><p>但是同态加密不支持加密值的乘法：所以需要「配对」</p><p>信任每一个参与方：</p><p>可能存在不同次幂使用不同的 s 和 a , 可以配对来一个一个计算</p><p>最后一个人更改，公开除了第一个人的参数，然后可以校验后续的结果是否成立</p><h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul><li><a href="https://medium.com/@imolfar/why-and-how-zk-snark-works-1-introduction-the-medium-of-a-proof-d946e931160">why-and-how-zk-snark-works</a></li><li><a href="https://secbit.io/blog/2019/12/25/learn-zk-snark-from-zero-part-one/">从零开始学习 zk-SNARK</a></li><li><a href="https://www.jianshu.com/p/7b772e5cdaef">读懂区块链之零知识证明（zk-SNARK）</a></li></ul>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>DeFi之旅（一）-概览</title>
       <link href="DeFi-part-one/"/>
       <url>DeFi-part-one/</url>
