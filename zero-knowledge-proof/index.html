@@ -23,7 +23,7 @@
 <meta property="og:image" content="https://image.bdwms.com/%E6%A8%A15.png">
 <meta property="og:image" content="https://image.bdwms.com/%E9%85%8D%E5%AF%B9.png">
 <meta property="article:published_time" content="2024-02-10T02:28:33.000Z">
-<meta property="article:modified_time" content="2024-02-21T13:27:50.615Z">
+<meta property="article:modified_time" content="2024-02-21T13:36:27.324Z">
 <meta property="article:author" content="bdwms">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://image.bdwms.com/%E5%B1%B1%E6%B4%9E.png">
@@ -306,8 +306,7 @@
 <p>我们把 x 的取值范围定在 1 到 $10^{77}$，那么计算结果不同的点的数量，就有 $10^{77}-d$ 个。因而 x 偶然撞到这 d 个结果相同的点中任意一个的概率就等于（可以认为是几乎不可能）：$\frac{d}{10^{77}}$​​。由此简化了需要 n 轮验证过程。</p>
 <p>然后对于多项式，「知道多项式」代表知道多项式每个幂的「系数」，例如对于：$c_1x^1+c_0&#x3D;0$ 知道这个多项式代表他知道 $c_0,c_1$</p>
 <p>现在我们整个协议就是围绕着多项式开始进行不断完善。</p>
-<h2 id="因式分解"><a href="#因式分解" class="headerlink" title="因式分解"></a>因式分解</h2><p>代数的基本定理表明了任意的一个多项式只要它有解，就可以将它分解成线性多项式（即，一个阶数为 1 的多项式代表一条线），因此，我们可以把任意有效的多项式看成是其因式的乘积：<br>$$<br>(x-a_0)(x-a_1)…(x-a_n)&#x3D;0<br>$$<br>也就是说如果任意一个因式为 0，那么整个等式都为 0，也就是说式子中所有的 $a_s$ 就是多项式的所有解。例如：<br>$$<br>x^3−3x^2+2x&#x3D;(x−0)(x−1)(x−2)<br>$$<br>我们将要证明的多项式记作 $p(x)$，将多项式的解记作 $t(x)$，那么一定存在某个多项式 $h(x)$，使得 $p(x)&#x3D;h(x)·t(x)$，即 $h(x)&#x3D;\frac{p(x)}{t(x)}$。例如  $p(x)&#x3D;x^3-3x^2+2x$ 除以 $t(x)&#x3D;(x-1)(x-2)&#x3D;x^2-3x+2$，得到结果 $x$，可以看到没有余数。</p>
-<p>$$<br>\require{enclose}<br>\begin{array}{r}<br>\phantom{x+1}x \<br>x^2 - 3x + 2<br>\enclose{longdiv}{x^3 - 3x^2 + 2x} \<br>\underline{-x^3 + 3x^2 - 2x} \<br>\phantom{x^2 - 3x + 2}0<br>\end{array}<br>$$<br>如果 prover 无法找到 $h(x)$ 满足上述条件，那么通过 $\frac{p(x)}{t(x)}$ 得到的一定会有余数，例如 $p’(x)&#x3D;2x^3-3x^2+2x$，计算出来的$h(x)&#x3D;2x+3+\frac{7x−6}{t(x)}$，有极低的概率 $\frac{7x−6}{t(x)}$ 是可以整除的。但是着要求检查多项式系数也是整数，$p$ 和 $h$ 也是整数，会对协议产生很大的限制。</p>
+<h2 id="因式分解"><a href="#因式分解" class="headerlink" title="因式分解"></a>因式分解</h2><p>代数的基本定理表明了任意的一个多项式只要它有解，就可以将它分解成线性多项式（即，一个阶数为 1 的多项式代表一条线），因此，我们可以把任意有效的多项式看成是其因式的乘积：<br>$$<br>(x-a_0)(x-a_1)…(x-a_n)&#x3D;0<br>$$<br>也就是说如果任意一个因式为 0，那么整个等式都为 0，也就是说式子中所有的 $a_s$ 就是多项式的所有解。例如：<br>$$<br>x^3−3x^2+2x&#x3D;(x−0)(x−1)(x−2)<br>$$<br>我们将要证明的多项式记作 $p(x)$，将多项式的解记作 $t(x)$，那么一定存在某个多项式 $h(x)$，使得 $p(x)&#x3D;h(x)·t(x)$，即 $h(x)&#x3D;\frac{p(x)}{t(x)}$。例如  $p(x)&#x3D;x^3-3x^2+2x$ 除以 $t(x)&#x3D;(x-1)(x-2)&#x3D;x^2-3x+2$，得到结果 $x$​，可以看到没有余数。<br>$$<br>\require{enclose}<br>\begin{array}{r}<br>\phantom{x+1}x \<br>x^2 - 3x + 2<br>\enclose{longdiv}{x^3 - 3x^2 + 2x} \<br>\underline{-x^3 + 3x^2 - 2x} \<br>\phantom{x^2 - 3x + 2}0<br>\end{array}<br>$$<br>如果 prover 无法找到 $h(x)$ 满足上述条件，那么通过 $\frac{p(x)}{t(x)}$ 得到的一定会有余数，例如 $p’(x)&#x3D;2x^3-3x^2+2x$，计算出来的$h(x)&#x3D;2x+3+\frac{7x−6}{t(x)}$，有极低的概率 $\frac{7x−6}{t(x)}$ 是可以整除的。但是着要求检查多项式系数也是整数，$p$ 和 $h$ 也是整数，会对协议产生很大的限制。</p>
 <p>现在我们的协议可以转换为下面：</p>
 <ul>
 <li>verifier 挑选一个随机值 $r$, 计算 $t &#x3D; t(r)$ (即，求值) ，然后将 $r$ 发送给 prover。</li>
@@ -415,13 +414,13 @@
 <p>同样的为了不让 verifier 从 prover 提供的数据中提取出多余的知识，我们也可以对 $g^p,g^{p’},g^h$ 做类似的 $α$ 变换</p>
 <h2 id="配对（双线性映射）"><a href="#配对（双线性映射）" class="headerlink" title="配对（双线性映射）"></a>配对（双线性映射）</h2><p>在同态隐藏中，是一对一的关系，是将一个输入到一个输出，双线性映射则是将两个元素映射到另一个域的第三个元素中，同时在两个输入上都具备线性：<br>$$<br>e(P+R,Q)&#x3D;e(P,Q)+e(R,Q)\<br>e(P,Q+S)&#x3D;e(P,Q)+e(P,S)<br>$$<br>那么假设对于 $x$ 的任意两种因数分解 $(a,b)$ 和 $(c,d)$，存在两个加法同态映射 $E_1$ 和 $E_2$，以及一个双线性映射 $e$，使得以下等式总是成立<br>$$<br>e(E_1(a),E_2(b))&#x3D;e(E_1(c),E_2(d))&#x3D;X<br>$$<br>那么，对于 $x\rightarrow X$ 的映射也是加法同态映射的，记作 $E$。</p>
 <p><img src="https://image.bdwms.com/%E9%85%8D%E5%AF%B9.png" alt="配对"></p>
-<p>证明：<br>$$<br>E(ax_1+bx_2)\<br>&#x3D;e(E_1(ax_1+bx_2),E_2(1))\<br>&#x3D;e(a<em>E_1(x_1)+b</em>E_1(x_2),E_2(1))\<br>&#x3D;a<em>e(E_1(x_1),E_2(1))+b</em>e(E_1(x_2),E_2(1))\<br>&#x3D;a<em>E(x_1)+b</em>E(x_2)<br>$$</p>
+<p>证明：<br>$$<br>E(ax_1+bx_2)\<br>&#x3D;e(E_1(ax_1+bx_2),E_2(1))\<br>&#x3D;e(aE_1(x_1)+bE_1(x_2),E_2(1))\<br>&#x3D;ae(E_1(x_1),E_2(1))+be(E_1(x_2),E_2(1))\<br>&#x3D;aE(x_1)+bE(x_2)<br>$$</p>
 <ol>
 <li>第一步：根据 $ax_1+bx_2&#x3D;(ax_1+bx_2)*1$ ，基于假设的等式 $e(E_1(c),E_2(d))&#x3D;X$​ 推导出来</li>
-<li>第二步：因为 $E_1$ 是加法同态映射，所以 $E_1(ax_1+bx_2)&#x3D;a<em>E_1(x_1)+b</em>E_1(x_2)$​</li>
+<li>第二步：因为 $E_1$ 是加法同态映射，所以 $E_1(ax_1+bx_2)&#x3D;aE_1(x_1)+bE_1(x_2)$​</li>
 <li>第三步：根据双线性映射在两个输入上都具备线性的性质可以推出，$e(P+R,Q)&#x3D;e(P,Q)+e(R,Q)$</li>
 <li>第四部：根据假设 x 的因式分解可以推出，$e(E_1(x_1),E_2(1))&#x3D;E(x_1)$​</li>
-<li>最后得到了对于运算 $E$ 得到 $E(ax_1+bx_2)&#x3D;a<em>E(x_1)+b</em>E(x_2)$ 这就是加法同态映射。</li>
+<li>最后得到了对于运算 $E$ 得到 $E(ax_1+bx_2)&#x3D;aE(x_1)+bE(x_2)$ 这就是加法同态映射。</li>
 </ol>
 <p>最终我们可以得到一个这个：$E(xy)&#x3D;e(E_1(x),E_2(y))$，可以看到我们利用配对 $e$ 使加法同态加密的 $x,y$ 映射到了另一个加法同态加密 $E$ 并且获得了 $xy$ 乘法形式的运算。</p>
 <p>有了这个工具，在后续中我们就可以处理需要两个加密值相乘的问题了。</p>
@@ -467,7 +466,7 @@
 <ul>
 <li>Setup<ul>
 <li>挑选随机值 $s，α$</li>
-<li>计算加密值 $g^α$ 和 ${g^{s^i}}<em>{i\in[d]}$，${g^{αs^i}}</em>{i\in[d]}$</li>
+<li>计算加密值 $g^α$ 和 ${g^{s^i}}<em>{i\in[0,\ldots,d]}$，${g^{αs^i}}</em>{i\in[0,\ldots,d]}$</li>
 <li>生成 proving key：$({g^{s^i}}<em>{i\in[d]}$,${g^{αs^i}}</em>{i\in[d]})$</li>
 <li>生成 verification key：$(g^α,g^{t(s)})$</li>
 </ul>
