@@ -43,7 +43,7 @@
     
     
     <entry>
-      <title>浅谈Android风控边界-syscall</title>
+      <title>深入Android风控边界-syscall</title>
       <link href="a-brief-discussion-on-android-risk-control-boundaries-syscall/"/>
       <url>a-brief-discussion-on-android-risk-control-boundaries-syscall/</url>
       
@@ -62,7 +62,7 @@
     
     
     <entry>
-      <title>浅谈Android风控边界-binder</title>
+      <title>深入Android风控边界-binder</title>
       <link href="a-brief-discussion-on-android-risk-control-boundaries-binder/"/>
       <url>a-brief-discussion-on-android-risk-control-boundaries-binder/</url>
       
