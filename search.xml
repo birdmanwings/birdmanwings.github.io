@@ -87,6 +87,19 @@
     
     
     <entry>
+      <title>前瞻大模型安全</title>
+      <link href="security-challenges-of-large-language-model/"/>
+      <url>security-challenges-of-large-language-model/</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>从零建设反爬虫体系</title>
       <link href="building-an-anti-scraping-system-from-scratch/"/>
       <url>building-an-anti-scraping-system-from-scratch/</url>
