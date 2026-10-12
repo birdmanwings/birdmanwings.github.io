@@ -20,7 +20,7 @@
 <meta property="og:image" content="https://image.bdwms.com/FvHsGjuxiuWLnIXz04eK4pLkoOm4">
 <meta property="og:image" content="https://image.bdwms.com/FgkGgBr3d1jnp_3ycicaEH7BkSCB">
 <meta property="article:published_time" content="2021-01-10T03:39:03.000Z">
-<meta property="article:modified_time" content="2026-10-12T13:55:35.204Z">
+<meta property="article:modified_time" content="2026-10-12T15:38:04.525Z">
 <meta property="article:author" content="bdwms">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://image.bdwms.com/FvB5KJRP8BMLJtatrdl8yHLHZFKZ">
@@ -70,17 +70,7 @@
     
 	<!-- mathjax -->
 	
-		<script type="text/x-mathjax-config">
-		  MathJax.Hub.Config({
-			tex2jax: {
-			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
-			  inlineMath: [['$','$']]
-			}
-		  });
-		</script>
-		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
-	
-<meta name="generator" content="Hexo 5.4.2"></head>
+<!-- hexo injector head_end start --><link rel="stylesheet" href="/css/diagrams.css"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
 
 <body class="max-width mx-auto px3 ltr">
     
@@ -304,7 +294,7 @@
 <li>动态DHE，ECDHE：公钥分别由服务端ServerKeyExchange，客户端ClientKeyExchange消息中，并计算得出Premaster_secret.</li>
 </ul>
 <p>之后使用Premaster_seceret通过PRF函数生成48字节的Master_secret</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">master_secret = PRF(pre_master_secret, <span class="string">&quot;master secret&quot;</span>,</span><br><span class="line">                            ClientHello.random + ServerHello.random)</span><br><span class="line">                            [<span class="number">0.</span><span class="number">.47</span>];</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">master_secret = PRF(pre_master_secret, <span class="string">&quot;master secret&quot;</span>,</span><br><span class="line">                            ClientHello.random + ServerHello.random)</span><br><span class="line">                            [<span class="number">0.</span>.<span class="number">47</span>];</span><br></pre></td></tr></table></figure>
 
 <p>Master_secret才是真正传递给记录层的，之后记录层利用Master_secret生成Session_key，然后切分为对称密钥，IV，MAC密钥来处理真正的应用数据。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">key_block = PRF(SecurityParameters.master_secret,</span><br><span class="line">                <span class="string">&quot;key expansion&quot;</span>,</span><br><span class="line">                SecurityParameters.server_random +</span><br><span class="line">                SecurityParameters.client_random);</span><br></pre></td></tr></table></figure>

@@ -1,0 +1,17 @@
+/* 窄屏下超宽公式：让公式自己横向滚动，不要把整页撑出横向滚动条（display 和行内都要管） */
+
+mjx-container {
+  max-width: 100%;
+}
+
+mjx-container[display="true"] {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* 行内公式保持文字流（inline-block），超宽时才出现自己的滚动条 */
+mjx-container:not([display="true"]) {
+  display: inline-block;
+  overflow-x: auto;
+  overflow-y: hidden;
+}

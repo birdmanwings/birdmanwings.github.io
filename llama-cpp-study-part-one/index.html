@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="从一个两百多行的示例出发，看清一次文本生成的全过程。  llama.cpp 是用 C++ 写的 LLM 推理引擎，代码量不小，直接扎进 src&#x2F; 容易迷路。笔者打算从最小的可运行示例 examples&#x2F;simple 开始读：它只有两百多行，但加载模型、分词、前向计算、采样这几步一个不少，正好把一次推理的轮廓勾勒出来。 给定一段提示词，模型要一个 token 一个 token 地把回答写">
+<meta property="og:type" content="article">
+<meta property="og:title" content="llama.cpp 学习笔记（一）：一次推理的流程">
+<meta property="og:url" content="http://example.com/llama-cpp-study-part-one/index.html">
+<meta property="og:site_name" content="BDWMS">
+<meta property="og:description" content="从一个两百多行的示例出发，看清一次文本生成的全过程。  llama.cpp 是用 C++ 写的 LLM 推理引擎，代码量不小，直接扎进 src&#x2F; 容易迷路。笔者打算从最小的可运行示例 examples&#x2F;simple 开始读：它只有两百多行，但加载模型、分词、前向计算、采样这几步一个不少，正好把一次推理的轮廓勾勒出来。 给定一段提示词，模型要一个 token 一个 token 地把回答写">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/diagrams/generated/mermaid-773c5b8883.svg">
+<meta property="og:image" content="http://example.com/images/diagrams/prefill.svg">
+<meta property="og:image" content="http://example.com/images/diagrams/decode.svg">
+<meta property="og:image" content="http://example.com/images/diagrams/generated/mermaid-365af19033.svg">
+<meta property="article:published_time" content="2026-10-12T15:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-12T15:38:04.526Z">
+<meta property="article:author" content="bdwms">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/diagrams/generated/mermaid-773c5b8883.svg">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>llama.cpp 学习笔记（一）：一次推理的流程</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-188330730-1"></script>
+  <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-188330730-1');
+  </script>
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<!-- hexo injector head_end start --><link rel="stylesheet" href="/css/diagrams.css"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"><script>window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};</script>
+<link rel="stylesheet" href="/css/mathjax.css">
+<script id="MathJax-script" async src="/lib/mathjax/tex-chtml-full.js"></script>
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Category</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/modern-gpu-programming-for-mlsys-reading-notes/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/llama-cpp-study-part-one/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/llama-cpp-study-part-one/&text=llama.cpp 学习笔记（一）：一次推理的流程"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/llama-cpp-study-part-one/&title=llama.cpp 学习笔记（一）：一次推理的流程"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/llama-cpp-study-part-one/&is_video=false&description=llama.cpp 学习笔记（一）：一次推理的流程"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=llama.cpp 学习笔记（一）：一次推理的流程&body=Check out this article: http://example.com/llama-cpp-study-part-one/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/llama-cpp-study-part-one/&title=llama.cpp 学习笔记（一）：一次推理的流程"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/llama-cpp-study-part-one/&title=llama.cpp 学习笔记（一）：一次推理的流程"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/llama-cpp-study-part-one/&title=llama.cpp 学习笔记（一）：一次推理的流程"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/llama-cpp-study-part-one/&title=llama.cpp 学习笔记（一）：一次推理的流程"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/llama-cpp-study-part-one/&name=llama.cpp 学习笔记（一）：一次推理的流程&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/llama-cpp-study-part-one/&t=llama.cpp 学习笔记（一）：一次推理的流程"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E6%AC%A1%E6%8E%A8%E7%90%86%E7%9A%84%E6%B5%81%E7%A8%8B"><span class="toc-number">1.</span> <span class="toc-text">一次推理的流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Prefill-%E4%B8%8E-Decode-%E7%9A%84%E5%88%86%E5%B7%A5"><span class="toc-number">2.</span> <span class="toc-text">Prefill 与 Decode 的分工</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%A8-llama-cpp-%E9%87%8C%E6%98%AF%E6%80%8E%E4%B9%88%E5%86%99%E7%9A%84"><span class="toc-number">3.</span> <span class="toc-text">在 llama.cpp 里是怎么写的</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E7%94%A8%E9%A1%BA%E5%BA%8F"><span class="toc-number">3.1.</span> <span class="toc-text">调用顺序</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%A0%E4%B8%AA%E5%AE%B9%E6%98%93%E6%B7%B7%E6%B7%86%E7%9A%84%E7%82%B9"><span class="toc-number">4.</span> <span class="toc-text">几个容易混淆的点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">小结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">6.</span> <span class="toc-text">参考</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        llama.cpp 学习笔记（一）：一次推理的流程
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">bdwms</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-10-12T15:00:00.000Z" class="dt-published" itemprop="datePublished">2026-10-12</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/llama-cpp/">llama.cpp</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <blockquote>
+<p>从一个两百多行的示例出发，看清一次文本生成的全过程。</p>
+</blockquote>
+<p>llama.cpp 是用 C++ 写的 LLM 推理引擎，代码量不小，直接扎进 <code>src/</code> 容易迷路。笔者打算从最小的可运行示例 <a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/tree/master/examples/simple">examples&#x2F;simple</a> 开始读：它只有两百多行，但加载模型、分词、前向计算、采样这几步一个不少，正好把一次推理的轮廓勾勒出来。</p>
+<p>给定一段提示词，模型要一个 token 一个 token 地把回答写出来。这个过程在推理引擎里被拆成两个阶段：<strong>prefill</strong> 处理提示词，<strong>decode</strong> 根据已经生成的内容继续往下写。</p>
+<h2 id="一次推理的流程"><a href="#一次推理的流程" class="headerlink" title="一次推理的流程"></a>一次推理的流程</h2><p><img src="/images/diagrams/generated/mermaid-773c5b8883.svg" alt="diagram"></p>
+<p>图中箭头表示执行顺序。第一个输出 token 来自 prefill 的 logits，此后每步 decode 只处理上一步刚生成的 token，循环往复，直到遇到结束符或达到长度上限。</p>
+<h2 id="Prefill-与-Decode-的分工"><a href="#Prefill-与-Decode-的分工" class="headerlink" title="Prefill 与 Decode 的分工"></a>Prefill 与 Decode 的分工</h2><div class="fig-pair">
+  <img src="../images/diagrams/prefill.svg" alt="Prefill：一次处理整个提示词，写入 KV">
+  <img src="../images/diagrams/decode.svg" alt="Decode：每次处理一个新 token，读取历史 KV">
+</div>
+
+<p>两个阶段跑的是同一套权重、同一段前向代码，区别在输入形状：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Prefill</th>
+<th>Decode</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>输入</td>
+<td>提示词的 n 个 token</td>
+<td>1 个 token</td>
+</tr>
+<tr>
+<td>前向次数</td>
+<td>通常一次（长提示词会被切批）</td>
+<td>每生成一个 token 一次</td>
+</tr>
+<tr>
+<td>KV cache</td>
+<td>写入 n 个位置</td>
+<td>读取全部历史，追加 1 个位置</td>
+</tr>
+<tr>
+<td>计算特征</td>
+<td>矩阵又宽又满，计算密集</td>
+<td>权重只服务 1 个 token，带宽压力大</td>
+</tr>
+</tbody></table>
+<p>Prefill 的 tokens&#x2F;s 远高于 decode，「长提示词的首字延迟」也主要花在 prefill 上，根子就在这张表里：prefill 把整段提示词拼成一个大矩阵，算力能跑满；decode 每步只有一个 token，却要把全部历史 KV 读回来，瓶颈从算力换成了带宽。</p>
+<p>KV cache 是两阶段的交汇点，它的大小可以直接估算：</p>
+<p>$$<br>\text{KV 占用} \approx 2 \times L \times H_{kv} \times d \times n_{ctx} \times \text{sizeof(dtype)}<br>$$</p>
+<p>其中 2 表示 K 和 V 两份，$L$ 是层数，$H_{kv}$ 是 KV 头数（GQA 下小于 Q 头数），$d$ 是每个头的维度。上下文越长、层数越多，这块显存涨得越快，后面的文章再展开。</p>
+<h2 id="在-llama-cpp-里是怎么写的"><a href="#在-llama-cpp-里是怎么写的" class="headerlink" title="在 llama.cpp 里是怎么写的"></a>在 llama.cpp 里是怎么写的</h2><p>示例没有把 prefill 和 decode 拆成两个接口，而是先把提示词填进一个 batch 提交，然后进入生成循环：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">batch_set_tokens</span>(batch, prompt_tokens.<span class="built_in">data</span>(), n_prompt, <span class="number">0</span>);   <span class="comment">// 提示词整体作为一个 batch</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 简化版主循环，省去错误检查、打印与性能统计</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> n_pos = <span class="number">0</span>; n_pos + n_tokens &lt; n_prompt + n_predict; ) &#123;</span><br><span class="line">    <span class="built_in">llama_process</span>(ctx, LLAMA_PROCESS_TYPE_DECODE, batch);</span><br><span class="line">    n_pos += n_tokens;</span><br><span class="line"></span><br><span class="line">    new_token_id = <span class="built_in">llama_sampler_sample</span>(smpl, ctx, <span class="number">-1</span>);       <span class="comment">// 从 logits 采样</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">llama_vocab_is_eog</span>(vocab, new_token_id)) <span class="keyword">break</span>;       <span class="comment">// 遇到结束 token</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">batch_set_tokens</span>(batch, &amp;new_token_id, <span class="number">1</span>, n_pos);         <span class="comment">// 下一步只喂这一个 token</span></span><br><span class="line">    n_tokens = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对照上面的流程，几处细节值得记下来：</p>
+<ul>
+<li><strong><code>batch_set_tokens</code> 做的事情</strong>：清空 batch，逐个加入 token，并用 <code>llama_batch_ext_set_pos()</code> 显式指定每个 token 的绝对位置。</li>
+<li><strong>输出位置只有一个</strong>：辅助函数里只对 batch 的最后一个位置调 <code>llama_batch_ext_set_output_logits()</code>。提示词前 n-1 个位置照样要过完整的前向（否则 KV 不完整），但不需要最后的 logits 投影，这部分开销被省掉了。</li>
+<li><strong>位置从 <code>n_pos</code> 接着数</strong>：decode 阶段的 token 位置必须紧接在已经处理过的 token 之后，KV cache 里的位置才是连续的。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 编译后直接跑（默认生成 32 个 token）</span></span><br><span class="line">./build/bin/llama-simple -m model.gguf <span class="string">&quot;Hello my name is&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>示例打开了性能统计（<code>ctx_params.no_perf = false</code>），运行结束会把两段耗时分开打印：<code>prompt eval time</code> 对应 prefill，<code>eval time</code> 对应 decode，单位都是每 token 毫秒和每秒 token 数，很适合用来验证上面那张表。</p>
+<h3 id="调用顺序"><a href="#调用顺序" class="headerlink" title="调用顺序"></a>调用顺序</h3><p><img src="/images/diagrams/generated/mermaid-365af19033.svg" alt="diagram"></p>
+<h2 id="几个容易混淆的点"><a href="#几个容易混淆的点" class="headerlink" title="几个容易混淆的点"></a>几个容易混淆的点</h2><ul>
+<li><p>**prefill 的 <code>type</code> 也是 <code>LLAMA_PROCESS_TYPE_DECODE</code>**：<code>llama_process()</code> 只有 encode &#x2F; decode 两种类型，提示词和单 token 走的是同一条路径，区别只在 batch 里的 token 数。</p>
+</li>
+<li><p><strong><code>n_batch</code> 与 <code>n_ubatch</code> 不是一回事</strong>：</p>
+</li>
+</ul>
+<blockquote>
+<p><code>n_batch</code>: logical maximum batch size that can be submitted to llama_decode<br><code>n_ubatch</code>: physical maximum batch size</p>
+<p>—— 摘自 <a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/blob/master/include/llama.h">include&#x2F;llama.h</a></p>
+</blockquote>
+<p>提交超过 <code>n_ubatch</code> 的 batch 时，引擎内部会切成多个 ubatch 分批计算。所以「prefill 只有一次前向」是简化说法，精确地说是一次 <code>llama_process()</code> 调用，内部可能分成多批。</p>
+<ul>
+<li><strong>上下文位置要预留够</strong>：示例把 <code>n_ctx</code> 设成 <code>n_prompt + n_predict - 1</code>。提示词占 <code>n_prompt</code> 个位置，之后每生成一个 token 再占一个；位置不够时最直接的报错就是上下文超限。</li>
+</ul>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><ul>
+<li>一次推理 &#x3D; 1 次 prefill + N 次 decode，共用同一段前向代码，差别只在输入形状与访存模式</li>
+<li>KV cache 连接两个阶段：prefill 写入，decode 读取并追加</li>
+<li>decode 每步的位置必须紧接历史位置，logits 只需要最后一个位置</li>
+</ul>
+<p>下一篇再往下钻：提示词是怎么被切成 token 的，以及 KV cache 在内存里长什么样。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/blob/master/examples/simple/simple.cpp">examples&#x2F;simple&#x2F;simple.cpp</a>：本文对照的示例</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/blob/master/examples/simple/README.md">examples&#x2F;simple&#x2F;README.md</a>：示例的运行输出</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/blob/master/include/llama.h">include&#x2F;llama.h</a>：<code>llama_process()</code>、<code>llama_batch_ext</code> 的接口注释</li>
+</ul>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/categories/">Category</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E6%AC%A1%E6%8E%A8%E7%90%86%E7%9A%84%E6%B5%81%E7%A8%8B"><span class="toc-number">1.</span> <span class="toc-text">一次推理的流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Prefill-%E4%B8%8E-Decode-%E7%9A%84%E5%88%86%E5%B7%A5"><span class="toc-number">2.</span> <span class="toc-text">Prefill 与 Decode 的分工</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%A8-llama-cpp-%E9%87%8C%E6%98%AF%E6%80%8E%E4%B9%88%E5%86%99%E7%9A%84"><span class="toc-number">3.</span> <span class="toc-text">在 llama.cpp 里是怎么写的</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E7%94%A8%E9%A1%BA%E5%BA%8F"><span class="toc-number">3.1.</span> <span class="toc-text">调用顺序</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%A0%E4%B8%AA%E5%AE%B9%E6%98%93%E6%B7%B7%E6%B7%86%E7%9A%84%E7%82%B9"><span class="toc-number">4.</span> <span class="toc-text">几个容易混淆的点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">小结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">6.</span> <span class="toc-text">参考</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/llama-cpp-study-part-one/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/llama-cpp-study-part-one/&text=llama.cpp 学习笔记（一）：一次推理的流程"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/llama-cpp-study-part-one/&title=llama.cpp 学习笔记（一）：一次推理的流程"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/llama-cpp-study-part-one/&is_video=false&description=llama.cpp 学习笔记（一）：一次推理的流程"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=llama.cpp 学习笔记（一）：一次推理的流程&body=Check out this article: http://example.com/llama-cpp-study-part-one/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/llama-cpp-study-part-one/&title=llama.cpp 学习笔记（一）：一次推理的流程"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/llama-cpp-study-part-one/&title=llama.cpp 学习笔记（一）：一次推理的流程"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/llama-cpp-study-part-one/&title=llama.cpp 学习笔记（一）：一次推理的流程"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/llama-cpp-study-part-one/&title=llama.cpp 学习笔记（一）：一次推理的流程"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/llama-cpp-study-part-one/&name=llama.cpp 学习笔记（一）：一次推理的流程&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/llama-cpp-study-part-one/&t=llama.cpp 学习笔记（一）：一次推理的流程"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2018-2026
+    <a target="_blank" rel="noopener" href="https://bdwms.site">bdwms<a>
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+          <li><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/">皖ICP备18025933号-3</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+ 
+  <link
+    rel="preload"
+    href="/lib/font-awesome/css/all.min.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript
+    ><link
+      rel="stylesheet"
+      href="/lib/font-awesome/css/all.min.css"
+  /></noscript>
+
+
+    <!-- jquery -->
+
+  
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+
+
+
+<!-- clipboard -->
+
+  
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'birdmanwings/birdmanwings.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = 'Comment';
+      var utterances_theme = 'github-dark';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

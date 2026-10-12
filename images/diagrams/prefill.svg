@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="350" height="336" viewBox="0 0 350 336" role="img" aria-labelledby="title desc">
+  <title id="title">Prefill 阶段</title>
+  <desc id="desc">Prefill 一次处理整个提示词的多个 token，把它们写入 KV cache，只输出最后一个位置的 logits。</desc>
+  <style>
+    .title { font-size: 18px; font-weight: 600; fill: #2bbc8a; }
+    .sub { font-size: 12.5px; fill: #9ba3a8; }
+    .note { font-size: 11px; fill: #858d92; }
+    .tok { font-size: 13px; fill: #eeeeee; text-anchor: middle; }
+    .box { font-size: 13.5px; fill: #d5dfed; text-anchor: middle; }
+    .kv { font-size: 12.5px; fill: #f2e2c9; text-anchor: middle; }
+    .out { font-size: 13px; fill: #cdeede; text-anchor: middle; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#9ba3a8"/>
+    </marker>
+  </defs>
+  <rect width="350" height="336" rx="14" fill="#232628"/>
+  <g font-family="PingFang SC, Hiragino Sans GB, Noto Sans CJK SC, sans-serif">
+    <text class="title" x="24" y="36">Prefill</text>
+    <text class="sub" x="24" y="58">一次处理整个提示词</text>
+
+    <g fill="#294e40" stroke="#2bbc8a">
+      <rect x="27" y="74" width="68" height="32" rx="6"/>
+      <rect x="103" y="74" width="68" height="32" rx="6"/>
+      <rect x="179" y="74" width="68" height="32" rx="6"/>
+      <rect x="255" y="74" width="68" height="32" rx="6"/>
+    </g>
+    <g class="tok">
+      <text x="61" y="95">t1</text>
+      <text x="137" y="95">t2</text>
+      <text x="213" y="95">t3</text>
+      <text x="289" y="95">t4</text>
+    </g>
+
+    <line x1="175" y1="110" x2="175" y2="121" stroke="#9ba3a8" stroke-width="1.6" marker-end="url(#arrow)"/>
+    <rect x="24" y="124" width="302" height="44" rx="8" fill="#2c3440" stroke="#7189a8"/>
+    <text class="box" x="175" y="151">一次前向计算</text>
+
+    <line x1="175" y1="172" x2="175" y2="183" stroke="#9ba3a8" stroke-width="1.6" marker-end="url(#arrow)"/>
+    <rect x="24" y="186" width="302" height="42" rx="8" fill="#4c3d2c" stroke="#d5a260"/>
+    <text class="kv" x="175" y="211">写入 KV：t1 ... t4</text>
+
+    <line x1="175" y1="232" x2="175" y2="243" stroke="#9ba3a8" stroke-width="1.6" marker-end="url(#arrow)"/>
+    <rect x="24" y="246" width="302" height="42" rx="8" fill="#294e40" stroke="#2bbc8a"/>
+    <text class="out" x="175" y="272">输出最后一个位置的 logits</text>
+
+    <text class="note" x="24" y="314">提示词较长时，引擎内部会切成多个 batch</text>
+  </g>
+</svg>

@@ -1,0 +1,23 @@
+/* 手工维护的机制图并排展示：宽屏左右对照，窄屏上下堆叠 */
+
+.fig-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  align-items: start;
+  margin: 1.5rem 0;
+}
+
+.fig-pair img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .fig-pair {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}

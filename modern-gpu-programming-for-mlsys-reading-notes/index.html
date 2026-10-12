@@ -14,7 +14,7 @@
 <meta property="og:description" content="循序渐进式讨论 Blackwell GPU 编程，建立初步宏观理解。  7 月偶然看到陈天奇大佬开源的新书《面向机器学习系统的现代 GPU 编程》，基于 CMU 的课程 15-442&#x2F;15-642: Machine Learning Systems。深入浅出讲解了 CUDA 新一代 Blackwell 架构 GPU 上的特点，并从朴素矩阵运算 GEMM 一直推演到几乎极限 SOTA。">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2026-08-03T14:41:53.000Z">
-<meta property="article:modified_time" content="2026-10-12T13:55:35.205Z">
+<meta property="article:modified_time" content="2026-10-12T15:38:04.526Z">
 <meta property="article:author" content="bdwms">
 <meta name="twitter:card" content="summary">
     
@@ -63,17 +63,19 @@
     
 	<!-- mathjax -->
 	
-		<script type="text/x-mathjax-config">
-		  MathJax.Hub.Config({
-			tex2jax: {
-			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
-			  inlineMath: [['$','$']]
-			}
-		  });
-		</script>
-		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
-	
-<meta name="generator" content="Hexo 5.4.2"></head>
+<!-- hexo injector head_end start --><link rel="stylesheet" href="/css/diagrams.css"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"><script>window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};</script>
+<link rel="stylesheet" href="/css/mathjax.css">
+<script id="MathJax-script" async src="/lib/mathjax/tex-chtml-full.js"></script>
+</head>
 
 <body class="max-width mx-auto px3 ltr">
     
@@ -100,6 +102,8 @@
     <br/>
     <span id="actions">
       <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/llama-cpp-study-part-one/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
         
         
         <li><a class="icon" aria-label="Next post" href="/translation-of-what-is-formal-verification/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>

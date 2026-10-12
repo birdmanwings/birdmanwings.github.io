@@ -13,13 +13,16 @@
 <meta property="og:site_name" content="BDWMS">
 <meta property="og:description" content="通过「声誉」和「验证」来发现 Agent 并建立信任。  一、背景与问题如今 AI Agent 正在从单机工具演变为能够互相调用、协作完成复杂任务的「经济体」。 举个具体的例子：你对一个「旅行规划 Agent」说「帮我安排下周去京都三天的行程」。这个 Agent 本身并不做所有事情，它会：调用「机票搜索 Agent」查询价格、调用「酒店预订 Agent」查询空房、调用「天气 Agent」获取预报">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/diagrams/generated/mermaid-9be9dcd537.svg">
+<meta property="og:image" content="http://example.com/images/diagrams/generated/mermaid-b407bab4f0.svg">
 <meta property="article:published_time" content="2026-03-02T12:51:29.000Z">
-<meta property="article:modified_time" content="2026-10-12T13:55:35.204Z">
+<meta property="article:modified_time" content="2026-10-12T15:38:04.525Z">
 <meta property="article:author" content="bdwms">
 <meta property="article:tag" content="ERC">
 <meta property="article:tag" content="AI Agent">
 <meta property="article:tag" content="Web3">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/diagrams/generated/mermaid-9be9dcd537.svg">
     
     
       
@@ -66,17 +69,7 @@
     
 	<!-- mathjax -->
 	
-		<script type="text/x-mathjax-config">
-		  MathJax.Hub.Config({
-			tex2jax: {
-			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
-			  inlineMath: [['$','$']]
-			}
-		  });
-		</script>
-		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
-	
-<meta name="generator" content="Hexo 5.4.2"></head>
+<!-- hexo injector head_end start --><link rel="stylesheet" href="/css/diagrams.css"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
 
 <body class="max-width mx-auto px3 ltr">
     
@@ -236,8 +229,7 @@
 </ul>
 <h2 id="三、协议完整运作流程"><a href="#三、协议完整运作流程" class="headerlink" title="三、协议完整运作流程"></a>三、协议完整运作流程</h2><p>用一个具体场景串起来：你需要找一个素不相识的 AI 分析 Agent 帮你写一份股票研究报告。</p>
 <p>在开始之前有一个基础认知要建立：「Agent 的 AI 服务本体是跑在普通服务器上的链下程序，区块链上存的只是它的身份名片」。ERC-8004 不关心计算在哪里发生，只关心身份信息如何上链存证。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    participant Owner as Agent Owner&lt;br/&gt;（服务提供方）</span><br><span class="line">    participant IR as Identity Registry&lt;br/&gt;（链上）</span><br><span class="line">    participant TG as The Graph&lt;br/&gt;（链下索引）</span><br><span class="line">    participant RR as Reputation Registry&lt;br/&gt;（链上）</span><br><span class="line">    participant VR as Validation Registry&lt;br/&gt;（链上）</span><br><span class="line">    participant Client as Client&lt;br/&gt;（你）</span><br><span class="line">    participant AgentSvr as Agent Server&lt;br/&gt;（链下服务器）</span><br><span class="line">    participant Validator as Validator&lt;br/&gt;（验证者合约）</span><br><span class="line"></span><br><span class="line">    rect rgb(220, 240, 255)</span><br><span class="line">        note over Owner,IR: 阶段一：Agent 把名片钉上链</span><br><span class="line">        Owner-&gt;&gt;IR: register(agentURI) 注册身份，指向 IPFS 描述文件</span><br><span class="line">        IR--&gt;&gt;Owner: 返回 agentId（铸造 NFT）</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    rect rgb(220, 255, 230)</span><br><span class="line">        note over Client,RR: 阶段二：你去找候选 Agent</span><br><span class="line">        Client-&gt;&gt;TG: 按标签/能力筛选 Agent</span><br><span class="line">        TG--&gt;&gt;Client: 返回候选 agentId 列表</span><br><span class="line">        Client-&gt;&gt;RR: getSummary(agentId, trustedClients, tag)</span><br><span class="line">        RR--&gt;&gt;Client: 返回历史评分汇总</span><br><span class="line">        Client-&gt;&gt;VR: getSummary(agentId, validators, tag)</span><br><span class="line">        VR--&gt;&gt;Client: 返回第三方核验汇总</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    rect rgb(255, 250, 220)</span><br><span class="line">        note over Client,AgentSvr: 阶段三：链下调用（与 ERC-8004 无关）</span><br><span class="line">        Client-&gt;&gt;AgentSvr: 通过注册文件端点发起任务（MCP / A2A）</span><br><span class="line">        AgentSvr--&gt;&gt;Client: 返回任务结果（股票研究报告）</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    rect rgb(255, 235, 220)</span><br><span class="line">        note over Client,RR: 阶段四：完成后给评价</span><br><span class="line">        Client-&gt;&gt;RR: giveFeedback(agentId, score, tag)</span><br><span class="line">        RR--&gt;&gt;Client: 返回 feedbackIndex，评价永久上链</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    rect rgb(240, 220, 255)</span><br><span class="line">        note over Client,Validator: 阶段五：高风险任务客观核验（可选）</span><br><span class="line">        Client-&gt;&gt;VR: validationRequest(validatorAddr, agentId, requestHash)</span><br><span class="line">        VR-&gt;&gt;Validator: 触发验证任务</span><br><span class="line">        Validator-&gt;&gt;AgentSvr: 用相同输入重跑任务</span><br><span class="line">        Validator-&gt;&gt;VR: validationResponse(requestHash, score, tag)</span><br><span class="line">        Client-&gt;&gt;VR: getValidationStatus(requestHash)</span><br><span class="line">        VR--&gt;&gt;Client: 返回核验结果（0-100）</span><br><span class="line">    end</span><br></pre></td></tr></table></figure>
-
+<p><img src="/images/diagrams/generated/mermaid-9be9dcd537.svg" alt="diagram"></p>
 <h3 id="阶段一：Agent-把名片钉上链"><a href="#阶段一：Agent-把名片钉上链" class="headerlink" title="阶段一：Agent 把名片钉上链"></a>阶段一：Agent 把名片钉上链</h3><p>Agent 服务提供方（Owner）将描述文件上传到 IPFS，然后调用 Identity Registry 注册，获得一个 <code>agentId</code>（本质是一个 NFT）。注册文件里写明了「它的 MCP&#x2F;A2A 服务端点在哪里」以及「它支持哪些信任机制」。</p>
 <p>这里有一个关键问题：Identity Registry 合约地址从哪里来？ERC-8004 规定每条链上只部署「一个全局单例合约」，地址由社区公认，就像 Uniswap 的合约地址一样，所有接入的工具都直接使用这个固定地址。</p>
 <h3 id="阶段二：你去找候选-Agent"><a href="#阶段二：你去找候选-Agent" class="headerlink" title="阶段二：你去找候选 Agent"></a>阶段二：你去找候选 Agent</h3><p>你通过这个公认的 Identity Registry 地址，用 The Graph 等索引服务按标签&#x2F;能力筛选，找到几个候选 Agent。</p>
@@ -464,8 +456,7 @@
 </tr>
 </tbody></table>
 <p>类比来说，如果 MCP 是 HTTP，A2A 是 SMTP，那么 ERC-8004 就是 DNS + 信用评分机构的组合。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">flowchart TD</span><br><span class="line">    App[&quot;应用层&lt;br/&gt;Agent Orchestrator / 用户应用&quot;]</span><br><span class="line">    ERC8004[&quot;目录 + 信任层&lt;br/&gt;ERC-8004&lt;br/&gt;（发现 · 身份 · 声誉 · 验证）&quot;]</span><br><span class="line">    A2A[&quot;通信层&lt;br/&gt;A2A&lt;br/&gt;（认证 · 任务编排 · 消息传递）&quot;]</span><br><span class="line">    MCP[&quot;能力层&lt;br/&gt;MCP&lt;br/&gt;（工具 · 资源 · 提示暴露）&quot;]</span><br><span class="line">    Agent[&quot;执行层&lt;br/&gt;Agent 服务本体&lt;br/&gt;（链下服务器 / 去中心化计算）&quot;]</span><br><span class="line"></span><br><span class="line">    App --&gt;|查询可信 Agent| ERC8004</span><br><span class="line">    ERC8004 --&gt;|提供端点地址| A2A</span><br><span class="line">    A2A --&gt;|协商能力| MCP</span><br><span class="line">    MCP --&gt;|调用执行| Agent</span><br></pre></td></tr></table></figure>
-
+<p><img src="/images/diagrams/generated/mermaid-b407bab4f0.svg" alt="diagram"></p>
 <p><strong>与支付协议（x402）的关系</strong>：支付流程是<strong>正交</strong>的，ERC-8004 刻意不处理支付逻辑，但预留了集成钩子：注册文件有 <code>x402Support</code> 布尔字段，反馈文件有 <code>proofOfPayment</code> 结构。这意味着付款凭证本身可以成为声誉信号——只有真实付过钱的 Client 的反馈，自然比匿名反馈更可信。</p>
 <p><strong>与 EIP-7702 的关系</strong>：结合 EIP-7702 的 Gas 赞助能力，应用可以代替 Client 支付提交反馈的 gas，Client 甚至不需要持有 ETH，大幅降低参与门槛。</p>
 <h2 id="六、可能遗留的问题"><a href="#六、可能遗留的问题" class="headerlink" title="六、可能遗留的问题"></a>六、可能遗留的问题</h2><p>ERC-8004 是一个务实的最小化协议，刻意将复杂问题留给生态解决，这带来了灵活性，但也留下了一些值得关注的开放问题：</p>
