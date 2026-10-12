@@ -1,4 +1,4 @@
-/* 手工维护的机制图并排展示：宽屏左右对照，窄屏上下堆叠 */
+/* 手工维护的机制图和 mermaid 并排图：宽屏左右对照，窄屏上下堆叠 */
 
 .fig-pair {
   display: grid;
@@ -8,11 +8,12 @@
   margin: 1.5rem 0;
 }
 
+/* 按图形自身尺寸显示，超过栅格宽度才等比缩小（不放大，避免小图被拉大） */
 .fig-pair img {
   display: block;
-  width: 100%;
+  max-width: 100%;
   height: auto;
-  margin: 0;
+  margin: 0 auto;
 }
 
 @media (max-width: 600px) {
