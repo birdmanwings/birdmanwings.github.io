@@ -6,12 +6,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta name="description" content="The main goal of llama.cpp is to enable LLM (and VLM) inference with minimal setup and state-of-the-art performance on a wide range of hardware … 项目 README  llama.cpp 是端侧大模型推理领域常用的开源引擎，在最近终于 release">
+    <meta name="description" content="The main goal of llama.cpp is to enable LLM (and VLM) inference with minimal setup and state-of-the-art performance on a wide range of hardware … 项目 README  模型架构规定了一次前向计算所需的运算及其数据依赖。推理引擎负责将这些运算映射到具体硬">
 <meta property="og:type" content="article">
 <meta property="og:title" content="端侧大模型推理引擎剖析（一）｜推理流程总览">
 <meta property="og:url" content="http://example.com/llama-cpp-on-device-inference-01-overview/index.html">
 <meta property="og:site_name" content="BDWMS">
-<meta property="og:description" content="The main goal of llama.cpp is to enable LLM (and VLM) inference with minimal setup and state-of-the-art performance on a wide range of hardware … 项目 README  llama.cpp 是端侧大模型推理领域常用的开源引擎，在最近终于 release">
+<meta property="og:description" content="The main goal of llama.cpp is to enable LLM (and VLM) inference with minimal setup and state-of-the-art performance on a wide range of hardware … 项目 README  模型架构规定了一次前向计算所需的运算及其数据依赖。推理引擎负责将这些运算映射到具体硬">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/images/diagrams/generated/mermaid-fac9ef85bc.svg">
 <meta property="og:image" content="http://example.com/images/diagrams/generated/mermaid-569c069d37.svg">
@@ -22,7 +22,7 @@
 <meta property="og:image" content="http://example.com/images/llama-cpp/01-overview/mac-metal-weights.png">
 <meta property="og:image" content="http://example.com/images/llama-cpp/01-overview/jetson-cuda-allocations.png">
 <meta property="article:published_time" content="2026-11-15T14:59:02.000Z">
-<meta property="article:modified_time" content="2026-11-15T15:08:01.687Z">
+<meta property="article:modified_time" content="2026-11-17T15:46:11.248Z">
 <meta property="article:author" content="bdwms">
 <meta property="article:tag" content="推理引擎">
 <meta name="twitter:card" content="summary">
@@ -132,7 +132,7 @@
     
     
       <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A8%E7%90%86%E7%9A%84%E8%AE%A1%E7%AE%97%E4%B8%8E%E7%A1%AC%E4%BB%B6%E5%9F%BA%E7%A1%80"><span class="toc-number">1.</span> <span class="toc-text">推理的计算与硬件基础</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%E4%B8%8E%E5%89%8D%E5%90%91%E8%AE%A1%E7%AE%97%E5%9B%BE"><span class="toc-number">1.1.</span> <span class="toc-text">矩阵运算与前向计算图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AB%AF%E4%BE%A7%E7%A1%AC%E4%BB%B6%E7%9A%84%E6%A0%B8%E5%BF%83%E7%BA%A6%E6%9D%9F"><span class="toc-number">1.2.</span> <span class="toc-text">端侧硬件的核心约束</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%A1%86%E6%9E%B6%E4%B8%8E%E5%BD%B1%E5%93%8D%E5%9B%A0%E7%B4%A0"><span class="toc-number">2.</span> <span class="toc-text">核心框架与影响因素</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%84%E4%BB%B7%E7%BB%B4%E5%BA%A6%EF%BC%9A%E6%97%B6%E9%97%B4%E3%80%81%E7%A9%BA%E9%97%B4%E5%92%8C%E8%B4%A8%E9%87%8F"><span class="toc-number">2.1.</span> <span class="toc-text">评价维度：时间、空间和质量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1%E9%80%89%E6%8B%A9%EF%BC%9A%E6%94%BE%E7%BD%AE%E3%80%81%E8%B0%83%E5%BA%A6%E5%92%8C%E8%A1%A8%E7%A4%BA"><span class="toc-number">2.2.</span> <span class="toc-text">设计选择：放置、调度和表示</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E-simple-%E7%9C%8B%E4%B8%80%E6%AC%A1%E6%8E%A8%E7%90%86%E8%BF%87%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">从 simple 看一次推理过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E5%88%86%E5%B1%82%E8%AE%BE%E8%AE%A1"><span class="toc-number">3.1.</span> <span class="toc-text">项目结构与分层设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E6%AC%A1%E5%89%8D%E5%90%91%E4%B8%8E%E7%94%9F%E6%88%90%E5%BE%AA%E7%8E%AF"><span class="toc-number">3.2.</span> <span class="toc-text">一次前向与生成循环</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E8%B7%B5%EF%BC%9A%E8%80%97%E6%97%B6%E4%B8%8E%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90"><span class="toc-number">4.</span> <span class="toc-text">实践：耗时与内存分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%8E%AF%E5%A2%83"><span class="toc-number">4.1.</span> <span class="toc-text">实验环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A8%E7%90%86%E8%80%97%E6%97%B6%E7%9A%84%E5%88%86%E5%B8%83"><span class="toc-number">4.2.</span> <span class="toc-text">推理耗时的分布</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E7%9A%84%E5%88%9B%E5%BB%BA%E4%B8%8E%E5%8D%A0%E7%94%A8"><span class="toc-number">4.3.</span> <span class="toc-text">内存的创建与占用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">总结</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E6%AC%A1%E5%89%8D%E5%90%91%E7%9A%84%E8%AE%A1%E7%AE%97%E5%9B%BE"><span class="toc-number">1.</span> <span class="toc-text">一次前向的计算图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E%E8%AE%A1%E7%AE%97%E5%9B%BE%E5%88%B0%E7%AB%AF%E4%BE%A7%E7%A1%AC%E4%BB%B6"><span class="toc-number">2.</span> <span class="toc-text">从计算图到端侧硬件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A1%AC%E4%BB%B6%E7%BA%A6%E6%9D%9F%E4%B8%8E%E8%AF%84%E4%BB%B7%E7%BB%B4%E5%BA%A6"><span class="toc-number">2.1.</span> <span class="toc-text">硬件约束与评价维度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E6%93%8E%E7%9A%84%E8%AE%BE%E8%AE%A1%E9%80%89%E6%8B%A9%E4%B8%8E%E5%88%86%E5%B1%82"><span class="toc-number">2.2.</span> <span class="toc-text">引擎的设计选择与分层</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E%E4%B8%80%E6%AC%A1%E5%89%8D%E5%90%91%E5%88%B0%E8%BF%9E%E7%BB%AD%E7%94%9F%E6%88%90"><span class="toc-number">3.</span> <span class="toc-text">从一次前向到连续生成</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E8%B7%B5%EF%BC%9A%E8%80%97%E6%97%B6%E4%B8%8E%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90"><span class="toc-number">4.</span> <span class="toc-text">实践：耗时与内存分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%8E%AF%E5%A2%83"><span class="toc-number">4.1.</span> <span class="toc-text">实验环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%8E%E5%90%AF%E5%8A%A8%E5%88%B0%E9%A6%96%E4%B8%AA%E8%BE%93%E5%87%BA"><span class="toc-number">4.2.</span> <span class="toc-text">从启动到首个输出</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E5%B0%B1%E7%BB%AA%E5%90%8E%E7%9A%84%E5%89%8D%E5%90%91%E8%80%97%E6%97%B6"><span class="toc-number">4.3.</span> <span class="toc-text">模型就绪后的前向耗时</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E7%9A%84%E5%88%86%E9%85%8D%E6%97%B6%E6%9C%BA%E4%B8%8E%E5%8D%A0%E7%94%A8"><span class="toc-number">4.4.</span> <span class="toc-text">内存的分配时机与占用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">总结</span></a></li></ol>
       </div>
     
   </span>
@@ -185,86 +185,75 @@
     <blockquote>
 <p>The main goal of <code>llama.cpp</code> is to enable LLM (and VLM) inference with minimal setup and state-of-the-art performance on a wide range of hardware … <a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/blob/b1b770d90d94cad9e9ea5b993bdbc383a522fb28/README.md#L62">项目 README</a></p>
 </blockquote>
-<p>llama.cpp 是端侧大模型推理领域常用的开源引擎，在最近终于 release v1.0.0 版本，在此契机笔者想要以较为全面的视角，宏观端侧推理引擎的核心设计与实现，整理学习本项目的同时，也能带给后续读者一定的启发。</p>
-<p>本系列关注其设计思想与架构实现：引擎如何描述不同模型架构的计算过程，又如何在不同硬件平台上高效执行这些计算。笔者将结合源码调试与对照实验，分析其中的关键设计及其对推理性能的影响。</p>
-<p>本系列共七篇，围绕模型加载、计算图构建、执行调度与内存管理展开。实验选用消费级硬件可运行的 Qwen3-4B，在 CUDA 和 Metal 后端上进行。模型算法与后端算子的讨论限于理解引擎设计和解释实验结果所需的范围。</p>
-<p>第一篇总览推理流程。笔者以 <code>llama-simple</code> 为入口，梳理单次前向计算与自回归生成循环之间的关系，定位各阶段的关键函数，并以时间、空间和质量作为分析引擎设计的三个维度。本文在 Jetson 与 Mac 上使用相同的模型和输入，测量分阶段耗时与内存占用，为后续各篇提供实验基线。</p>
+<p>模型架构规定了一次前向计算所需的运算及其数据依赖。推理引擎负责将这些运算映射到具体硬件，在设备的算力、内存带宽和容量约束下，安排权重的存放、算子的执行与中间结果的复用。</p>
+<p>本系列以 llama.cpp v1.0.0 为基础，分七篇讨论端侧推理引擎的设计与实现。第一篇从模型加载讲到逐步生成，梳理一次前向计算在整个生成过程中的位置，并结合实测分析各阶段的耗时与内存占用。</p>
 <p><img src="/images/diagrams/generated/mermaid-fac9ef85bc.svg" alt="diagram"></p>
-<p>虚线表示篇章之间的总分关系，实线表示主要执行阶段及其数据依赖。一次前向完成后，历史 K&#x2F;V 作为缓存状态保留，采样得到的 token ID 作为下一轮的输入。</p>
-<h2 id="推理的计算与硬件基础"><a href="#推理的计算与硬件基础" class="headerlink" title="推理的计算与硬件基础"></a>推理的计算与硬件基础</h2><h3 id="矩阵运算与前向计算图"><a href="#矩阵运算与前向计算图" class="headerlink" title="矩阵运算与前向计算图"></a>矩阵运算与前向计算图</h3><p>矩阵乘法是 Transformer 前向传播的核心运算之一。以自注意力层为例，设输入矩阵 X 的每一行对应一个 token 位置。查询 Q、键 K 和值 V 由同一份输入分别乘以三组可学习的权重得到。</p>
+<p>虚线标出第一篇与后续各篇的总分关系。实线沿执行过程展开，末尾两条分支分别给出下一轮前向所需的历史 K&#x2F;V 和新 token。</p>
+<h2 id="一次前向的计算图"><a href="#一次前向的计算图" class="headerlink" title="一次前向的计算图"></a>一次前向的计算图</h2><p>给定一串输入 token，自回归语言模型经过多层运算，在末位置得到词表中各候选 token 的分数（logits）。从输入算到这些分数，就是一次前向。</p>
+<p>以自注意力层为例，查询 Q、键 K 和值 V 是输入 X 的三个矩阵投影。三者可以独立求值，每个投影内部的矩阵运算也可以并行。</p>
 <p><i>Q</i> = <i>XW</i><sub>Q</sub>，　<i>K</i> = <i>XW</i><sub>K</sub>，　<i>V</i> = <i>XW</i><sub>V</sub></p>
 
-<p>以第一个式子为例，X 的一行与查询权重的一列做点积，就得到该位置的一个查询分量。不同的行、列组合可以独立求值，因此能并行计算多个输出元素。</p>
-<p>对当前位置，Q 与各可见位置的 K 计算匹配分数。分数归一化为注意力权重，再按权重汇总相应位置的 V，形成当前位置的注意力输出。</p>
 <p><img src="/images/diagrams/generated/mermaid-569c069d37.svg" alt="diagram"></p>
-<p>沿图中的箭头看，计算注意力权重需要 Q 和 K 就绪，加权汇总还需要 V。把一轮前向中的运算按这样的数据依赖连接起来，便得到有向无环图（DAG）。图上的依赖限定哪些运算必须先完成，每个矩阵运算内部仍可并行计算大量输出元素。</p>
-<p>Qwen3 的前馈网络（FFN）同样可以用计算图描述。up 和 gate 投影读取同一份输入，门控分支经过激活后与 up 分支逐元素相乘，再由 down 投影得到输出。</p>
-<h3 id="端侧硬件的核心约束"><a href="#端侧硬件的核心约束" class="headerlink" title="端侧硬件的核心约束"></a>端侧硬件的核心约束</h3><p>CPU 负责控制流程和任务提交，GPU 可以并行计算矩阵乘法中的大量输出元素。</p>
-<p>GPU 的片上存储容量有限。Mac 和 Jetson 都使用 CPU 与 GPU 共享的系统内存来容纳模型权重和 KV 缓存。执行前向计算时，从内存读取权重的带宽会影响计算单元获得数据的速度。</p>
-<p>以一层投影为例，可以分别观察算力、内存带宽和容量的约束。</p>
+<p>图中节点表示运算，箭头表示数据依赖。计算注意力权重需要 Q 和 K，加权汇总还需要 V。把一轮前向中的运算按这种依赖关系连起来，就得到一张有向无环图（DAG）。</p>
+<p>计算图规定了哪些结果必须先就绪。要在端侧设备上执行这张图，引擎还要决定权重放在哪里、每段计算交给谁，以及哪些中间结果可以共用一块内存。</p>
+<h2 id="从计算图到端侧硬件"><a href="#从计算图到端侧硬件" class="headerlink" title="从计算图到端侧硬件"></a>从计算图到端侧硬件</h2><h3 id="硬件约束与评价维度"><a href="#硬件约束与评价维度" class="headerlink" title="硬件约束与评价维度"></a>硬件约束与评价维度</h3><p>仍以投影为例。处理整段提示词时，多个 token 的向量可以一起乘以同一组权重，GPU 有较多可并行的计算。逐个生成时，单个请求每步只增加一个位置，各层权重仍要参与运算。此时即使计算单元充足，从内存读取权重的带宽也可能限制生成速度。</p>
+<p>还有一项更直接的约束是容量。Mac 和 Jetson 的 CPU、GPU 共享系统内存。模型权重占用一部分容量，生成时保留的历史 K&#x2F;V 和临时工作区也需要空间。若采用更低精度的权重或 KV 缓存，存储和读取的数据量可以减少，模型的预测也可能随之改变。由此可以从三个维度评价一次设计选择。</p>
 <table>
 <thead>
 <tr>
-<th>条件</th>
-<th>在一次推理中的表现</th>
+<th>评价维度</th>
+<th>具体看什么</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>算力</td>
-<td>处理整段提示词（prefill）时，多个位置的投影可以并行计算，运算单元有更多工作可做。</td>
+<td>时间</td>
+<td>从发起请求到首个 token 的等待（TTFT），以及首个输出之后，每生成一个 token 的平均耗时（TPOT）。把计时起点放在程序入口，则还会计入模型加载等一次性开销。</td>
 </tr>
 <tr>
-<td>内存带宽</td>
-<td>单请求逐 token 生成（decode）时，一步通常只新增一行输入，却仍要访问各层权重。数据供给速度可能限制生成速度。</td>
+<td>空间</td>
+<td>权重占多少，跨轮保留的 KV 缓存占多少，执行中间结果还需要多大工作区。</td>
 </tr>
 <tr>
-<td>可用内存容量</td>
-<td>权重常驻期间，还要容纳历史 K&#x2F;V 和计算工作区。留给 KV 的空间会限制可保留的上下文长度。</td>
+<td>质量</td>
+<td>固定评测语料或任务，比较改变数值表示前后，对同一前缀的预测或任务得分有何变化。</td>
 </tr>
 </tbody></table>
-<h2 id="核心框架与影响因素"><a href="#核心框架与影响因素" class="headerlink" title="核心框架与影响因素"></a>核心框架与影响因素</h2><h3 id="评价维度：时间、空间和质量"><a href="#评价维度：时间、空间和质量" class="headerlink" title="评价维度：时间、空间和质量"></a>评价维度：时间、空间和质量</h3><p>算力和带宽影响前向计算耗时。权重、KV 缓存与中间结果共同决定内存需求。改变权重或 KV 缓存的数值精度，还可能改变模型输出。</p>
-<p>时间主要分为得到首个 token 的等待 TTFT 和每个后续输出 token 的平均耗时 TPOT。空间要区分随模型存在的权重、跨轮保留的 KV，以及一次执行所需的中间占用内存。质量则要回到预测本身：给定同一前缀，模型给真实下一词的概率或任务答案是否发生变化？</p>
-<h3 id="设计选择：放置、调度和表示"><a href="#设计选择：放置、调度和表示" class="headerlink" title="设计选择：放置、调度和表示"></a>设计选择：放置、调度和表示</h3><p>固定模型后，可以从放置、调度和表示三个方面分析引擎设计，观察每项选择如何影响时间、空间和质量。</p>
+<h3 id="引擎的设计选择与分层"><a href="#引擎的设计选择与分层" class="headerlink" title="引擎的设计选择与分层"></a>引擎的设计选择与分层</h3><p>以图中的查询投影为例。GPU 的并行算力能否用上，取决于后端是否支持这项运算，以及输入和权重能否及时到达。顺着这层投影，可以区分引擎的三种设计选择。</p>
 <table>
 <thead>
 <tr>
 <th>设计选择</th>
-<th>如何影响三要素</th>
+<th>在一层投影中如何体现</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>放置 · 数据放在哪里</td>
-<td>哪些层的权重放在 GPU 侧，哪些留在 CPU 侧，会影响两端的内存占用和跨后端传输。</td>
+<td>放置</td>
+<td>根据 CPU、GPU 的算子支持、计算能力和可用容量，选择由哪个设备执行投影、权重存放在哪类缓冲区。</td>
 </tr>
 <tr>
-<td>调度 · 计算怎样安排</td>
-<td>中间结果用完后，后续算子是否可以复用这块缓冲区，降低峰值内存占用。</td>
+<td>调度</td>
+<td>按后端切分计算图，为跨后端依赖安排必要的搬运与同步，并按中间结果的使用时序规划工作区复用。</td>
 </tr>
 <tr>
-<td>表示 · 数值怎样保存</td>
-<td>量化权重或 KV 缓存可以减少存储和读取的数据量，也可能影响输出质量。</td>
+<td>表示</td>
+<td>选择权重和 KV 缓存的数值格式。量化可以减少存储和读取的字节数，也可能改变预测结果。</td>
 </tr>
 </tbody></table>
-<p>前两类实验固定计算语义，以相同前缀的输出作校验。涉及有损表示时，质量也成为要测量的代价。第六篇会用同一份语料比较两种量化的表示。</p>
-<h2 id="从-simple-看一次推理过程"><a href="#从-simple-看一次推理过程" class="headerlink" title="从 simple 看一次推理过程"></a>从 simple 看一次推理过程</h2><h3 id="项目结构与分层设计"><a href="#项目结构与分层设计" class="headerlink" title="项目结构与分层设计"></a>项目结构与分层设计</h3><p>llama.cpp  在 v1.0.0 的官方公告中，强调并重申了其分层设计的理念，不同层级的职责划分，接口稳定抽象最终能够长期支持多种后端，多种模型架构。模型适配与硬件适配分在两层。推理库 <code>libllama</code> 描述每种模型需要哪些权重、如何用这些权重构建计算图；张量库 <code>libggml</code> 提供图中的算子，并通过统一的后端接口调度执行。</p>
+<p>在 llama.cpp 中，模型计算的描述与后端执行分属两层。应用通过 <code>llama.h</code> 使用推理库。<code>libllama</code> 描述 Qwen3 所需的权重，并用这些权重构建计算图。<code>libggml</code> 提供张量、算子和后端调度接口，具体内核由相应后端实现。以图中的查询投影为例，Mac 和 Jetson 可以共用 Qwen3 的建图代码，执行时分别使用 Metal 和 CUDA。这也是 v1.0.0 强调库接口与兼容性的背景。<a target="_blank" rel="noopener" href="https://huggingface.co/blog/ggml-org/llama-cpp-v1">v1.0.0 发布说明</a> · <a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/blob/v1.0.0/src/models/qwen3.cpp#L99">Qwen3 建图源码</a></p>
 <p><img src="/images/diagrams/generated/mermaid-aec3dbd11a.svg" alt="diagram"></p>
-<p>以 Qwen3 为例，<code>libllama</code> 指定输入与查询权重相乘。相同的投影在 Mac 上由 Metal 后端执行，在 Jetson 上由 CUDA 后端执行，两端共用同一份模型建图代码。<a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/blob/v1.0.0/src/models/qwen3.cpp#L53">Qwen3 建图源码</a> · <a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/blob/v1.0.0/ggml/include/ggml-backend.h#L197">ggml 后端接口</a></p>
-<h3 id="一次前向与生成循环"><a href="#一次前向与生成循环" class="headerlink" title="一次前向与生成循环"></a>一次前向与生成循环</h3><p>以 <code>llama-simple</code> 为例，从加载模型到生成文本，一次请求依次经过以下阶段。</p>
+<h2 id="从一次前向到连续生成"><a href="#从一次前向到连续生成" class="headerlink" title="从一次前向到连续生成"></a>从一次前向到连续生成</h2><p><code>llama-simple</code> 是一个最小的文本生成程序。它读入模型文件和一段提示词，逐个输出后续 token。从它的 <code>main</code> 可以看到，模型文件中的权重如何成为计算图的输入，一轮前向留下的状态又怎样被下一轮使用。</p>
 <p><img src="/images/diagrams/generated/mermaid-b734449297.svg" alt="diagram"></p>
 <ol>
-<li><p>加载模型文件 llama_model：第二篇将说明 GGUF 文件结构设计，模型加载模式（以 mmap 为例），硬件选择规划逻辑等，最终得到 llama_model 对象完整持有模型元数据、权重数据等。</p>
+<li><p>从文件到模型。GGUF 文件记录了模型架构、配置参数和各层权重。加载器据此建立 <code>llama_model</code>，并将权重映射或读入后端可访问的缓冲区。此后，建图代码可以通过模型对象取得每一层所需的权重。</p>
 </li>
-<li><p>创建 llama_context：这里主要阐述推理上下文初始化时的核心工作，除了创建必要的后端准备，KV Cache 内存初始化，核心围绕 sched_reserve 第一次图构建与规划，了解掌握 DAG 图如何从数学模型到逻辑计算图 cgraph，以及逻辑计算图 cgraph 如何结合实际后端环境进行图切割规划。</p>
-<p>第三篇讨论如何从模型构建逻辑计算图，第四篇讨论如何按后端切分计算图并规划内存复用。</p>
+<li><p>从模型到上下文。<code>llama_context</code> 管理执行一次前向所需的资源，也保存跨轮使用的状态。本例在创建上下文时为历史 K&#x2F;V 预留缓存。为了确定计算工作区的大小，引擎还会在 <code>sched_reserve</code> 中按预期输入规模构建逻辑图，由调度器按后端切分，并根据中间结果的生命周期规划内存复用。这些准备在提示词参与计算之前完成。</p>
 </li>
-<li><p>Prefill：第一次处理 prompt batch 时对于图构建与规划类似 context 的工作，会进行尝试图复用。因此在第 5 篇主要着重于实际计算的执行，异步调度等机制，与后端接口的设计交互，并初步展开 cuda 和 metal 后端的实现。</p>
+<li><p>从输入到前向结果。提示词分成一串 token 后，第一次调用 <code>llama_process</code> 处理整段输入（prefill）。引擎为这批输入构建或复用计算图，调度器将各子图交给相应后端执行。前向完成后，末位置的 logits 可供采样，提示词各位置的键和值则留在 KV 缓存中。</p>
 </li>
-<li><p>采样：根据本轮前向得到的 logits 选择下一个 token。第七篇讨论采样策略与生成循环。</p>
-</li>
-<li><p>Decode：将刚采样的 token 作为下一轮输入，沿用此前保留的 K&#x2F;V，计算新的 logits。第六篇讨论 KV 缓存的写入与复用。</p>
+<li><p>从采样到下一轮前向（图中第 4、5 步）。本例的采样器选择分数最高的 token。若选中普通 token，程序将其输出。只要还需继续生成，就把它作为下一轮唯一的新输入，沿用历史 K&#x2F;V 再做一次前向（decode），得到下一组 logits。循环在采到结束标记或达到输出上限时终止。<a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/blob/v1.0.0/examples/simple/simple.cpp#L184">llama-simple 生成循环</a></p>
 </li>
 </ol>
-<h2 id="实践：耗时与内存分析"><a href="#实践：耗时与内存分析" class="headerlink" title="实践：耗时与内存分析"></a>实践：耗时与内存分析</h2><h3 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a>实验环境</h3><p>两端使用同一份 Qwen3-4B Q4_K_M 权重和同一版本的 <code>llama-simple</code>（v1.0.0，<code>b1b770d90</code>，Release）。37&#x2F;37 层均放在 GPU 上。提示词分为 4 个 token，经 1 次 prefill 和 15 次 decode，贪心采样共输出 16 个 token。</p>
+<h2 id="实践：耗时与内存分析"><a href="#实践：耗时与内存分析" class="headerlink" title="实践：耗时与内存分析"></a>实践：耗时与内存分析</h2><h3 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a>实验环境</h3><p>两端运行同一份 Qwen3-4B Q4_K_M 权重和同一版本的 <code>llama-simple</code>（v1.0.0，<code>b1b770d90</code>，Release）。日志记录的 37&#x2F;37 层均放在 GPU 上。输入、生成上限和贪心采样策略相同，这组实验比较时间与空间。</p>
 <table>
 <thead>
 <tr>
@@ -291,7 +280,7 @@
 </tbody></table>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./build/bin/llama-simple -m <span class="string">&quot;<span class="variable">$STUDY_MODEL</span>&quot;</span> -ngl 99 -n 16 <span class="string">&#x27;Hello my name is&#x27;</span></span><br></pre></td></tr></table></figure>
 
-<h3 id="推理耗时的分布"><a href="#推理耗时的分布" class="headerlink" title="推理耗时的分布"></a>推理耗时的分布</h3><p>先看首个 token。两端各连续启动两个新进程，保留系统页缓存，分别测量模型加载、上下文创建及从进入 <code>main</code> 到首个 token 输出的耗时。</p>
+<h3 id="从启动到首个输出"><a href="#从启动到首个输出" class="headerlink" title="从启动到首个输出"></a>从启动到首个输出</h3><p>每台设备连续启动两个新进程，两次之间保留系统页缓存。从进入 <code>main</code> 开始计时，到首个新 token 输出为止。这个口径包含后端准备、模型加载、上下文创建和首次前向。</p>
 <table>
 <thead>
 <tr>
@@ -326,8 +315,8 @@
 <td align="right">6.38 s</td>
 </tr>
 </tbody></table>
-<p>Mac 首次启动时，Metal 算子库准备用了 4.78 s，第二次仅需 14 ms。Jetson 两次都以模型加载为主。Metal 可直接使用映射的文件页，Jetson 的 CUDA 后端即使命中页缓存，仍需将权重复制到设备缓冲区。第二篇将展开两端的加载策略。</p>
-<p>再看模型就绪后的生成过程。下表取自两端各一次普通运行的引擎计时，GPU 时间线按相同参数另行采集。</p>
+<p>Mac 第一次运行时，准备 Metal 算子库单项就用了 4.78 秒。第二次，这项工作降到 14 ms，加载模型也从 2.75 秒降到 0.15 秒。Jetson 第二次的 6.38 秒里，6.07 秒仍在模型加载阶段，上下文创建只用了 51 ms。要把这 6.07 秒进一步分到读文件、缓冲区准备和权重传输，还需要在加载器内部分段计时。</p>
+<h3 id="模型就绪后的前向耗时"><a href="#模型就绪后的前向耗时" class="headerlink" title="模型就绪后的前向耗时"></a>模型就绪后的前向耗时</h3><p>本次提示词分为 4 个 token。一次 prefill 后就能采样出首个输出，余下 15 个输出各需一次 decode。下表取自两端各一次普通运行的引擎计时，GPU 时间线按相同参数另行采集。</p>
 <table>
 <thead>
 <tr>
@@ -357,14 +346,14 @@
 <td align="right">5.11 ms</td>
 </tr>
 </tbody></table>
-<p>本例中，15 步 decode 占前向总耗时（prefill + decode）的 88.1%（Mac）和 81.4%（Jetson）。</p>
+<p>在这次 4 个输入、16 个输出的短请求中，15 步 decode 占前向总耗时的 88.1%（Mac）和 81.4%（Jetson）。这里的分母是 prefill 与 decode 之和。逐步生成占比高，既与单步成本有关，也与它连续执行了 15 次有关。若要改善首个输出之后的生成速度，表中的单步 decode 耗时比启动耗时更有参考价值。</p>
 <p><a href="/images/llama-cpp/01-overview/mac-metal-prefill-command.png"><img src="/images/llama-cpp/01-overview/mac-metal-prefill-command.png" alt="Instruments 中选中的首条 Metal Compute 命令，右侧显示耗时 5.11 ms"></a></p>
 <p style="margin:0.5em auto 1.5em;text-align:center;line-height:1.55"><span style="font-weight:600">图 1　Mac 上的 Metal 前向计算时间线</span><br><small>选中的 Compute 命令耗时 5.11 ms。按执行顺序推定，prefill 对应前两条 Compute 命令，累计 32.42 ms。</small></p>
 
 <p><img src="/images/llama-cpp/01-overview/jetson-cuda-kernels.png" alt="Jetson 上四种量化矩阵向量乘法的 kernel 耗时"></p>
 <p style="margin:0.5em auto 1.5em;text-align:center;line-height:1.55"><span style="font-weight:600">图 2　Jetson 上的 CUDA 内核耗时分布</span><br><small>四种 <code>mul_mat_vec_q</code> 内核合计占本次采集全部 GPU 内核累计执行时间的 88.4%。</small></p>
 
-<h3 id="内存的创建与占用"><a href="#内存的创建与占用" class="headerlink" title="内存的创建与占用"></a>内存的创建与占用</h3><p>加载模型时先建立权重缓冲区。创建 <code>llama_context</code> 时再分配 KV 缓存，并由 <code>sched_reserve</code> 为计算图预留工作区。下表为引擎报告的缓冲区容量，单位为 MiB。</p>
+<h3 id="内存的分配时机与占用"><a href="#内存的分配时机与占用" class="headerlink" title="内存的分配时机与占用"></a>内存的分配时机与占用</h3><p>先按创建时机看。模型加载时建立权重缓冲区，创建上下文时再为 KV 缓存与计算工作区预留内存。随后每轮前向往缓存里写入新位置的 K&#x2F;V。因此在时间线上，KV 缓存已经分配时，提示词对应的 K&#x2F;V 可能还没有写入。</p>
 <table>
 <thead>
 <tr>
@@ -394,15 +383,16 @@
 <td align="right">0.58</td>
 </tr>
 </tbody></table>
-<p>本例只预留了 256 个上下文位置，设备侧权重约为 KV 缓存的 66 倍。Jetson 的进程峰值 RSS 为 548.82 MiB，这个指标未覆盖全部 CUDA 分配。</p>
+<p>表中数值是引擎报告的缓冲区容量，单位为 MiB。本例预留 256 个上下文位置，设备侧权重为 2375.91 MiB，约是 KV 缓存的 66 倍，明显大于计算工作区。若保持模型和缓存格式不变，增加预留位置，权重大小保持不变，KV 缓存的容量则会增长。Jetson 的进程峰值 RSS 为 548.82 MiB，未覆盖全部 CUDA 分配。这里以引擎的缓冲区记录衡量设备权重占用。</p>
 <p><a href="/images/llama-cpp/01-overview/mac-metal-weights.png"><img src="/images/llama-cpp/01-overview/mac-metal-weights.png" alt="Metal 权重缓冲区的大小与创建调用栈" width="519" style="max-width:100%;height:auto"></a></p>
 <p style="margin:0.5em auto 1.5em;text-align:center;line-height:1.55"><span style="font-weight:600">图 3　Mac 上的模型权重映射</span><br><small>3.690 s 处创建的 Metal 缓冲区大小为 2.32 GiB。调用栈显示，<code>load_tensors</code> 经由 <code>ggml_metal_buffer_map</code> 映射权重。</small></p>
 
 <p><img src="/images/llama-cpp/01-overview/jetson-cuda-allocations.png" alt="Jetson 上设备权重、KV 缓存和计算工作区的分配事件"></p>
 <p style="margin:0.5em auto 1.5em;text-align:center;line-height:1.55"><span style="font-weight:600">图 4　Jetson 上的 CUDA 内存分配时序</span><br><small>设备权重（2375.91 MiB）分配于 1.871 s，KV 缓存（36 MiB）分配于 9.160 s，随后分配计算工作区。</small></p>
 
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>在本篇文章中我们了解了端侧推理的基本原理和硬性限制，建立了「时间、空间、质量」三要素的评估纬度，在后续文章中将会通过尝试改变「放置、调度、表示」三方面设计去剖析整个项目。以及本篇以 simple 为例子大致展开了一次前向推理的核心流程，并通过在 Mac 和 Jetson 上进行性能实验，重点关注到耗时和内存分布与占比。</p>
-<p>在第二章中我们将继续推进到模型文件与加载，深入 GGUF 文件的设计，与各种加载模式的设计剖析，最终得到内存结构体 llama_model。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>一次文本生成从加载权重开始，经建图、调度与执行得到候选分数，再由采样把本轮输出接回下一轮输入。沿这条路径，放置决定数据与计算的位置，调度安排子图执行与内存复用，表示决定权重和 KV 缓存采用何种数值格式。时间、空间和质量则用来评价这些选择的代价。</p>
+<p>本篇固定模型与数值格式，先观察时间和空间。Jetson 第二次启动时，等待首个输出的时间主要花在模型加载。模型就绪后，两端大部分前向时间花在随后的 15 步 decode。在只预留 256 个上下文位置的配置下，设备侧内存占用以权重为主。后续比较量化方案时，还需在同一份语料上考察预测质量。</p>
+<p>回到前面的查询投影，建图时已经可以从 <code>llama_model</code> 取得它的权重。加载器怎样在 GGUF 文件中定位这个张量，又怎样让后端访问它的数据？Mac 和 Jetson 都由 CPU、GPU 共享物理内存，两者的加载路径在哪一步分开？第二篇《从 GGUF 到内存》将跟随这个张量，从它在文件中的位置一直看到它在内存中对应的权重缓冲区。</p>
 
   </div>
 </article>
@@ -438,7 +428,7 @@
     
     
       <div id="toc-footer" style="display: none">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A8%E7%90%86%E7%9A%84%E8%AE%A1%E7%AE%97%E4%B8%8E%E7%A1%AC%E4%BB%B6%E5%9F%BA%E7%A1%80"><span class="toc-number">1.</span> <span class="toc-text">推理的计算与硬件基础</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%E4%B8%8E%E5%89%8D%E5%90%91%E8%AE%A1%E7%AE%97%E5%9B%BE"><span class="toc-number">1.1.</span> <span class="toc-text">矩阵运算与前向计算图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AB%AF%E4%BE%A7%E7%A1%AC%E4%BB%B6%E7%9A%84%E6%A0%B8%E5%BF%83%E7%BA%A6%E6%9D%9F"><span class="toc-number">1.2.</span> <span class="toc-text">端侧硬件的核心约束</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%A1%86%E6%9E%B6%E4%B8%8E%E5%BD%B1%E5%93%8D%E5%9B%A0%E7%B4%A0"><span class="toc-number">2.</span> <span class="toc-text">核心框架与影响因素</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%84%E4%BB%B7%E7%BB%B4%E5%BA%A6%EF%BC%9A%E6%97%B6%E9%97%B4%E3%80%81%E7%A9%BA%E9%97%B4%E5%92%8C%E8%B4%A8%E9%87%8F"><span class="toc-number">2.1.</span> <span class="toc-text">评价维度：时间、空间和质量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1%E9%80%89%E6%8B%A9%EF%BC%9A%E6%94%BE%E7%BD%AE%E3%80%81%E8%B0%83%E5%BA%A6%E5%92%8C%E8%A1%A8%E7%A4%BA"><span class="toc-number">2.2.</span> <span class="toc-text">设计选择：放置、调度和表示</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E-simple-%E7%9C%8B%E4%B8%80%E6%AC%A1%E6%8E%A8%E7%90%86%E8%BF%87%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">从 simple 看一次推理过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E5%88%86%E5%B1%82%E8%AE%BE%E8%AE%A1"><span class="toc-number">3.1.</span> <span class="toc-text">项目结构与分层设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E6%AC%A1%E5%89%8D%E5%90%91%E4%B8%8E%E7%94%9F%E6%88%90%E5%BE%AA%E7%8E%AF"><span class="toc-number">3.2.</span> <span class="toc-text">一次前向与生成循环</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E8%B7%B5%EF%BC%9A%E8%80%97%E6%97%B6%E4%B8%8E%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90"><span class="toc-number">4.</span> <span class="toc-text">实践：耗时与内存分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%8E%AF%E5%A2%83"><span class="toc-number">4.1.</span> <span class="toc-text">实验环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A8%E7%90%86%E8%80%97%E6%97%B6%E7%9A%84%E5%88%86%E5%B8%83"><span class="toc-number">4.2.</span> <span class="toc-text">推理耗时的分布</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E7%9A%84%E5%88%9B%E5%BB%BA%E4%B8%8E%E5%8D%A0%E7%94%A8"><span class="toc-number">4.3.</span> <span class="toc-text">内存的创建与占用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">总结</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E6%AC%A1%E5%89%8D%E5%90%91%E7%9A%84%E8%AE%A1%E7%AE%97%E5%9B%BE"><span class="toc-number">1.</span> <span class="toc-text">一次前向的计算图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E%E8%AE%A1%E7%AE%97%E5%9B%BE%E5%88%B0%E7%AB%AF%E4%BE%A7%E7%A1%AC%E4%BB%B6"><span class="toc-number">2.</span> <span class="toc-text">从计算图到端侧硬件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A1%AC%E4%BB%B6%E7%BA%A6%E6%9D%9F%E4%B8%8E%E8%AF%84%E4%BB%B7%E7%BB%B4%E5%BA%A6"><span class="toc-number">2.1.</span> <span class="toc-text">硬件约束与评价维度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E6%93%8E%E7%9A%84%E8%AE%BE%E8%AE%A1%E9%80%89%E6%8B%A9%E4%B8%8E%E5%88%86%E5%B1%82"><span class="toc-number">2.2.</span> <span class="toc-text">引擎的设计选择与分层</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E%E4%B8%80%E6%AC%A1%E5%89%8D%E5%90%91%E5%88%B0%E8%BF%9E%E7%BB%AD%E7%94%9F%E6%88%90"><span class="toc-number">3.</span> <span class="toc-text">从一次前向到连续生成</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E8%B7%B5%EF%BC%9A%E8%80%97%E6%97%B6%E4%B8%8E%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90"><span class="toc-number">4.</span> <span class="toc-text">实践：耗时与内存分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%8E%AF%E5%A2%83"><span class="toc-number">4.1.</span> <span class="toc-text">实验环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%8E%E5%90%AF%E5%8A%A8%E5%88%B0%E9%A6%96%E4%B8%AA%E8%BE%93%E5%87%BA"><span class="toc-number">4.2.</span> <span class="toc-text">从启动到首个输出</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E5%B0%B1%E7%BB%AA%E5%90%8E%E7%9A%84%E5%89%8D%E5%90%91%E8%80%97%E6%97%B6"><span class="toc-number">4.3.</span> <span class="toc-text">模型就绪后的前向耗时</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E7%9A%84%E5%88%86%E9%85%8D%E6%97%B6%E6%9C%BA%E4%B8%8E%E5%8D%A0%E7%94%A8"><span class="toc-number">4.4.</span> <span class="toc-text">内存的分配时机与占用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">总结</span></a></li></ol>
       </div>
     
 
